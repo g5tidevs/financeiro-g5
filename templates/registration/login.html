@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Entrar · Financeiro{% endblock %}
+{% block body %}
+<main class="login">
+  <div class="login-painel">
+    <h1>Financeiro</h1>
+    <p class="login-sub">Entre com o usuário fornecido pelo seu supervisor.</p>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">Usuário ou senha incorretos. Confira os dados e tente de novo.</div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+      </div>
+      <div class="mb-4">
+        <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        {{ form.password }}
+      </div>
+      <button type="submit" class="btn btn-primario w-100">Entrar</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

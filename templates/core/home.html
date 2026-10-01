@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="pagina-titulo">Olá, {{ user.first_name|default:user.username }}</h1>
+<p class="pagina-sub">Escolha o controle que você quer lançar ou consultar.</p>
+
+<div class="modulos">
+  <section class="modulo">
+    <h2>Links de pagamento</h2>
+    <p>Acompanhe cada link do pagamento até o envio da documentação: pago, no caixa, NC assinada e DOC.</p>
+  </section>
+  <section class="modulo">
+    <h2>Devolução de Pix</h2>
+    <p>Registre devoluções por loja, banco e motivo, e marque o que já foi conciliado pela EJL.</p>
+  </section>
+  <section class="modulo">
+    <h2>Estorno de cartão</h2>
+    <p>Controle estornos pelo NSU, a solicitação no Safra e a conciliação.</p>
+  </section>
+</div>
+{% endblock %}
