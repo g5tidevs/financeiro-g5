@@ -13,7 +13,14 @@ class Usuario(AbstractUser):
         choices=Papel.choices,
         default=Papel.COMUM,
     )
-
+    loja = models.ForeignKey(
+        "cadastros.Loja",
+        verbose_name="Loja",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="usuarios",
+    )
     class Meta:
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"

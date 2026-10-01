@@ -20,11 +20,13 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+     "simple_history",
 ]
 
 LOCAL_APPS = [
     "apps.core",
     "apps.contas",
+    "apps.cadastros",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
@@ -37,6 +39,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
+     "simple_history.middleware.HistoryRequestMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
