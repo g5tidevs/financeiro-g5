@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.contas',
+]
+
+LOCAL_APPS = [
+    "apps.contas",
 ]
 
 MIDDLEWARE = [
@@ -79,6 +84,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "contas.Usuario"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -120,3 +126,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
