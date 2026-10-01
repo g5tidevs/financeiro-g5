@@ -24,18 +24,22 @@
 
       <div class="collapse navbar-collapse" id="menu-principal">
         <ul class="navbar-nav me-auto">
-          {% with rota=request.resolver_match.url_name %}
+          {% with rota=request.resolver_match.url_name app=request.resolver_match.app_name %}
           <li class="nav-item">
             <a class="nav-link {% if rota == 'home' %}active{% endif %}" href="{% url 'core:home' %}"
                {% if rota == 'home' %}aria-current="page"{% endif %}>Início</a>
           </li>
-          {% endwith %}
           <li class="nav-item"><span class="nav-link disabled">Links de pagamento</span></li>
           <li class="nav-item"><span class="nav-link disabled">Devolução de Pix</span></li>
           <li class="nav-item"><span class="nav-link disabled">Estorno de cartão</span></li>
           {% if user.is_supervisor %}
+          <li class="nav-item">
+            <a class="nav-link {% if app == 'cadastros' %}active{% endif %}" href="{% url 'cadastros:lista' 'lojas' %}"
+               {% if app == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>
+          </li>
           <li class="nav-item"><span class="nav-link disabled">Dashboard</span></li>
           {% endif %}
+          {% endwith %}
         </ul>
 
         <div class="app-usuario">

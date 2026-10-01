@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ config.titulo }} · Cadastros{% endblock %}
+{% block content %}
+<h1 class="pagina-titulo">Cadastros</h1>
+<p class="pagina-sub">Listas usadas nos formulários do sistema. Desative o que não for mais usado: os lançamentos antigos continuam intactos.</p>
+
+<nav class="abas" aria-label="Tipos de cadastro">
+  {% for slug, titulo in abas %}
+    <a href="{% url 'cadastros:lista' slug %}" class="aba {% if slug == entidade %}ativa{% endif %}"
+       {% if slug == entidade %}aria-current="page"{% endif %}>{{ titulo }}</a>
+  {% endfor %}
+</nav>
+
+<div class="barra-acoes">
+  <form method="get" class="filtros">
+    <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Buscar" aria-label="Buscar">
+    <select name="status" class="form-select" aria-label="Situação">
+      <option value="ativos" {% if status == "ativos" %}selected{% endif %}>Ativos</option>
+      <option value="inativos" {% if status == "inativos" %}selected{% endif %}>Inativos</option>
+      <option value="todos" {% if status == "todos" %}selected{% endif %}>Todos</option>
+    </select>
+    <button type="submit" class="btn btn-secundario">Filtrar</button>
+  </form>
+  <a href="{% url 'cadastros:novo' entidade %}" class="btn btn-primario">{{ config.novo }}</a>
+</div>
+
+<div class="tabela-container">
+  <table class="table tabela">
+    <thead>
+      <tr>
+        {% for rotulo, campo in config.colunas %}<th>{{ rotulo }}</th>{% endfor %}
+        <th>Situação</th>
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in object_list %}
+      <tr class="{% if not obj.ativo %}inativo{% endif %}">
+        {% for rotulo, campo in config.colunas %}<td>{{ obj|atributo:campo|default:"—" }}</td>{% endfor %}
+        <td>
+          {% if obj.ativo %}<span class="selo selo-ok">Ativo</span>{% else %}<span class="selo selo-off">Inativo</span>{% endif %}
+        </td>
+        <td class="text-end acoes">
+          <a href="{% url 'cadastros:editar' entidade obj.pk %}">Editar</a>
+          <form method="post" action="{% url 'cadastros:alternar' entidade obj.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="{{ status }}">
+            <button type="submit" class="btn btn-link p-0">{% if obj.ativo %}Desativar{% else %}Reativar{% endif %}</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="{{ config.colunas|length|add:2 }}" class="vazio">
+          {% if q %}
+            Nada encontrado para “{{ q }}”. Confira a grafia ou mude o filtro de situação.
+          {% else %}
+            Nenhum cadastro aqui ainda. Use o botão “{{ config.novo }}” para criar o primeiro.
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="paginacao" aria-label="Paginação">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}&status={{ status }}">Anterior</a>
+  {% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}&status={{ status }}">Próxima</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

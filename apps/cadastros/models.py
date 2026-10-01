@@ -25,7 +25,11 @@ class Vendedor(ModeloBase):
         verbose_name_plural = "Vendedores"
         ordering = ["nome"]
         constraints = [
-            models.UniqueConstraint(fields=["nome", "loja"], name="vendedor_unico_por_loja"),
+            models.UniqueConstraint(
+                fields=["nome", "loja"],
+                name="vendedor_unico_por_loja",
+                violation_error_message="Já existe um vendedor com esse nome nesta loja.",
+            ),
         ]
 
     def __str__(self):
@@ -58,7 +62,11 @@ class Motivo(ModeloBase):
         verbose_name_plural = "Motivos"
         ordering = ["tipo", "descricao"]
         constraints = [
-            models.UniqueConstraint(fields=["descricao", "tipo"], name="motivo_unico_por_tipo"),
+            models.UniqueConstraint(
+                fields=["descricao", "tipo"],
+                name="motivo_unico_por_tipo",
+                violation_error_message="Esse motivo já está cadastrado para este tipo.",
+            ),
         ]
 
     def __str__(self):

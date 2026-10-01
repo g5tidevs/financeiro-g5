@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ config.titulo }} · Cadastros{% endblock %}
+{% block content %}
+<a href="{% url 'cadastros:lista' entidade %}" class="voltar">Voltar para {{ config.titulo|lower }}</a>
+<h1 class="pagina-titulo">{% if object %}Editar {{ object }}{% else %}{{ config.novo }}{% endif %}</h1>
+
+<form method="post" class="formulario" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+
+  {% for field in form %}
+  <div class="mb-3">
+    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+    {% for erro in field.errors %}<div class="campo-erro">{{ erro }}</div>{% endfor %}
+  </div>
+  {% endfor %}
+
+  <div class="formulario-acoes">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{% url 'cadastros:lista' entidade %}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+{% endblock %}
