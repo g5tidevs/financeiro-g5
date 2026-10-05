@@ -21,13 +21,7 @@ class DevolucaoPix(ModeloBase):
     banco = models.ForeignKey(
         "cadastros.Banco", verbose_name="Banco", on_delete=models.PROTECT, related_name="devolucoes_pix"
     )
-    motivo = models.ForeignKey(
-        "cadastros.Motivo",
-        verbose_name="Motivo",
-        on_delete=models.PROTECT,
-        limit_choices_to={"tipo": "PIX"},
-        related_name="devolucoes_pix",
-    )
+    motivo = models.CharField("Motivo", max_length=255)
     conciliado = models.BooleanField("Conciliado (EJL)", default=False)
 
     class Meta:

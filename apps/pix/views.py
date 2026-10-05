@@ -12,7 +12,7 @@ class PixListView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        return DevolucaoPix.objects.ativos().select_related("loja", "banco", "motivo")
+        return DevolucaoPix.objects.ativos().select_related("loja", "banco")
 
 
 class PixFormMixin:

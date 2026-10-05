@@ -3,7 +3,7 @@
 {% block content %}
 <a href="{% url 'pix:lista' %}" class="voltar">Voltar para devoluções de Pix</a>
 <h1 class="pagina-titulo">{% if object %}Editar devolução{% else %}Nova devolução de Pix{% endif %}</h1>
-<p class="pagina-sub">Banco e motivo vêm dos cadastros. Se faltar alguma opção, peça ao supervisor para incluir.</p>
+<p class="pagina-sub">Loja e banco vêm dos cadastros. No motivo, digite livremente: os motivos já usados aparecem como sugestão.</p>
 
 <form method="post" class="formulario formulario-largo" novalidate>
   {% csrf_token %}
@@ -19,6 +19,9 @@
     {% include "partials/campo.html" with field=form.valor %}
     {% include "partials/campo.html" with field=form.banco %}
     {% include "partials/campo.html" with field=form.motivo classe="span-2" %}
+    <datalist id="motivos-sugeridos">
+      {% for motivo in form.sugestoes_motivo %}<option value="{{ motivo }}">{% endfor %}
+    </datalist>
   </div>
 
   <div class="form-check">
