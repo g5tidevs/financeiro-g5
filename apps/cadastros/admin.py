@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from apps.core.admin import ModeloBaseAdmin
 
-from .models import Banco, Loja, Motivo, Vendedor
+from .models import Banco, Loja, Vendedor
 
 
 @admin.register(Loja)
@@ -26,9 +26,3 @@ class BancoAdmin(ModeloBaseAdmin):
     list_filter = ("ativo",)
     search_fields = ("nome", "codigo")
 
-
-@admin.register(Motivo)
-class MotivoAdmin(ModeloBaseAdmin):
-    list_display = ("descricao", "tipo", "ativo")
-    list_filter = ("tipo", "ativo")
-    search_fields = ("descricao",)

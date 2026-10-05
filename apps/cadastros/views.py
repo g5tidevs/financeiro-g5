@@ -8,8 +8,8 @@ from django.views.generic import CreateView, ListView, UpdateView
 
 from apps.contas.mixins import SupervisorRequiredMixin
 
-from .forms import BancoForm, LojaForm, MotivoForm, VendedorForm
-from .models import Banco, Loja, Motivo, Vendedor
+from .forms import BancoForm, LojaForm, VendedorForm
+from .models import Banco, Loja, Vendedor
 
 # Cada cadastro do sistema é uma entrada neste dicionário.
 # A chave é o trecho da URL: /cadastros/lojas/, /cadastros/vendedores/ ...
@@ -38,14 +38,6 @@ CADASTROS = {
         "novo": "Novo banco",
         "colunas": [("Código", "codigo"), ("Nome", "nome")],
         "busca": ["nome", "codigo"],
-    },
-    "motivos": {
-        "model": Motivo,
-        "form": MotivoForm,
-        "titulo": "Motivos",
-        "novo": "Novo motivo",
-        "colunas": [("Descrição", "descricao"), ("Usado em", "get_tipo_display")],
-        "busca": ["descricao"],
     },
 }
 

@@ -128,3 +128,23 @@ body { font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }
 }
+
+/* ===== Filtros das listas ===== */
+.painel-filtros { background: var(--papel); border: 1px solid var(--linha); padding: 1rem 1.25rem; margin: 1.5rem 0 1rem; }
+.filtros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem 1rem; }
+.filtros-grid .form-label { font-size: .8rem; font-weight: 500; color: var(--tinta-suave); margin-bottom: .25rem; }
+.filtros-acoes { display: flex; gap: .5rem; margin-top: 1rem; }
+
+/* ===== Resumo (totais) ===== */
+.resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.resumo-item { background: var(--papel); border: 1px solid var(--linha); padding: .9rem 1.1rem; display: flex; flex-direction: column; }
+.resumo-rotulo { font-size: .8rem; color: var(--tinta-suave); }
+.resumo-valor { font-size: 1.35rem; font-weight: 600; }
+.resumo-detalhe { font-size: .8rem; color: var(--tinta-suave); }
+.resumo-alerta { border-left: 4px solid #e0a106; }
+
+/* ===== Exclusão ===== */
+.zona-perigo { max-width: 720px; margin-top: 2rem; padding: 1rem 1.25rem; border: 1px solid #f1c4c0; background: #fdf4f3; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.zona-perigo p { margin: .25rem 0 0; font-size: .9rem; color: var(--tinta-suave); }
+.btn-perigo { background: #b42318; color: #fff; }
+.btn-perigo:hover, .btn-perigo:focus { background: #8f1c13; color: #fff; }

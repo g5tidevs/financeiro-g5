@@ -37,4 +37,16 @@
     <a href="{% url 'pix:lista' %}" class="btn btn-secundario">Cancelar</a>
   </div>
 </form>
+
+{% if object and user.is_supervisor %}
+<form method="post" action="{% url 'pix:excluir' object.pk %}" class="zona-perigo"
+      onsubmit="return confirm('Excluir esta devolução? Ela some das listas e dos totais.');">
+  {% csrf_token %}
+  <div>
+    <strong>Excluir devolução</strong>
+    <p>Use só para lançamentos feitos por engano. O registro sai das listas e dos totais, mas continua guardado no histórico.</p>
+  </div>
+  <button type="submit" class="btn btn-perigo">Excluir</button>
+</form>
+{% endif %}
 {% endblock %}

@@ -48,26 +48,3 @@ class Banco(ModeloBase):
     def __str__(self):
         return f"{self.codigo} - {self.nome}" if self.codigo else self.nome
 
-
-class Motivo(ModeloBase):
-    class Tipo(models.TextChoices):
-        PIX = "PIX", "Devolução de Pix"
-        ESTORNO = "ESTORNO", "Estorno de cartão"
-
-    descricao = models.CharField("Descrição", max_length=150)
-    tipo = models.CharField("Usado em", max_length=10, choices=Tipo.choices)
-
-    class Meta:
-        verbose_name = "Motivo"
-        verbose_name_plural = "Motivos"
-        ordering = ["tipo", "descricao"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["descricao", "tipo"],
-                name="motivo_unico_por_tipo",
-                violation_error_message="Esse motivo já está cadastrado para este tipo.",
-            ),
-        ]
-
-    def __str__(self):
-        return self.descricao

@@ -2,7 +2,7 @@ from django.db.models import Q
 
 from apps.core.forms import BootstrapModelForm
 
-from .models import Banco, Loja, Motivo, Vendedor
+from .models import Banco, Loja, Vendedor
 
 
 class LojaForm(BootstrapModelForm):
@@ -29,8 +29,3 @@ class BancoForm(BootstrapModelForm):
         model = Banco
         fields = ["codigo", "nome"]
 
-
-class MotivoForm(BootstrapModelForm):
-    class Meta:
-        model = Motivo
-        fields = ["descricao", "tipo"]
