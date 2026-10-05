@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}Devolução de Pix{% endblock %}
+{% block content %}
+<div class="barra-acoes">
+  <div>
+    <h1 class="pagina-titulo">Devolução de Pix</h1>
+    <p class="pagina-sub mb-0">Devoluções lançadas, da mais recente para a mais antiga.</p>
+  </div>
+  <a href="{% url 'pix:novo' %}" class="btn btn-primario">Nova devolução</a>
+</div>
+
+<div class="tabela-container">
+  <table class="table tabela">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Loja</th>
+        <th>Cliente</th>
+        <th class="num">Valor</th>
+        <th>Banco</th>
+        <th>Motivo</th>
+        <th>EJL</th>
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in object_list %}
+      <tr>
+        <td>{{ d.data|date:"d/m/Y" }}</td>
+        <td>{{ d.loja }}</td>
+        <td>{{ d.cliente }}</td>
+        <td class="num">{{ d.valor|brl }}</td>
+        <td>{{ d.banco.nome }}</td>
+        <td>{{ d.motivo }}</td>
+        <td>
+          {% if d.conciliado %}<span class="selo selo-ok">Conciliado</span>{% else %}<span class="selo selo-pendente">Pendente</span>{% endif %}
+        </td>
+        <td class="text-end acoes"><a href="{% url 'pix:editar' d.pk %}">Editar</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" class="vazio">Nenhuma devolução lançada ainda. Use o botão “Nova devolução” para registrar a primeira.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="paginacao" aria-label="Paginação">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Próxima</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

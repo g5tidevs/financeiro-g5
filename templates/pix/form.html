@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Editar devolução{% else %}Nova devolução{% endif %} · Devolução de Pix{% endblock %}
+{% block content %}
+<a href="{% url 'pix:lista' %}" class="voltar">Voltar para devoluções de Pix</a>
+<h1 class="pagina-titulo">{% if object %}Editar devolução{% else %}Nova devolução de Pix{% endif %}</h1>
+<p class="pagina-sub">Banco e motivo vêm dos cadastros. Se faltar alguma opção, peça ao supervisor para incluir.</p>
+
+<form method="post" class="formulario formulario-largo" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+
+  <div class="form-grid">
+    {% include "partials/campo.html" with field=form.data %}
+    {% include "partials/campo.html" with field=form.loja %}
+    {% include "partials/campo.html" with field=form.cliente classe="span-2" %}
+    {% include "partials/campo.html" with field=form.valor %}
+    {% include "partials/campo.html" with field=form.banco %}
+    {% include "partials/campo.html" with field=form.motivo classe="span-2" %}
+  </div>
+
+  <div class="form-check">
+    {{ form.conciliado }}
+    <label class="form-check-label" for="{{ form.conciliado.id_for_label }}">{{ form.conciliado.label }}</label>
+  </div>
+
+  <div class="formulario-acoes">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    {% if not object %}
+      <button type="submit" name="salvar_e_novo" value="1" class="btn btn-secundario">Salvar e lançar outra</button>
+    {% endif %}
+    <a href="{% url 'pix:lista' %}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+{% endblock %}
