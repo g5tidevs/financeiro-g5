@@ -175,3 +175,19 @@ body { font-variant-numeric: tabular-nums; }
 .selo-botao { border: 0; cursor: pointer; }
 .selo-botao:hover, .selo-botao:focus-visible { text-decoration: underline; filter: brightness(.95); }
 .aviso-confirmacao { background: #fdf1d6; border: 1px solid #f0d28a; padding: .75rem 1rem; margin-bottom: 1rem; }
+
+/* ===== Links: atalhos de pendência ===== */
+.atalhos { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: 1rem; }
+.atalhos-rotulo { font-size: .85rem; color: var(--tinta-suave); }
+.atalho { font-size: .85rem; padding: .25rem .75rem; border: 1px solid var(--linha); border-radius: 999px; background: var(--papel); color: var(--tinta); text-decoration: none; }
+.atalho:hover { border-color: var(--tinta-suave); color: var(--tinta); }
+.atalho.ativo { background: var(--verde-rodape); border-color: var(--verde-rodape); color: #fff; }
+
+/* ===== Links: checklist do formulário ===== */
+.checklist { border: 1px solid var(--linha); padding: .75rem 1rem 1rem; margin: .5rem 0 0; }
+.checklist legend { float: none; width: auto; font-size: .9rem; font-weight: 600; padding: 0 .4rem; margin: 0; }
+.checklist-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem 1rem; }
+
+@media (max-width: 640px) {
+  .checklist-grid { grid-template-columns: 1fr; }
+}

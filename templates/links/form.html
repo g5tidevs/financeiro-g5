@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Editar link{% else %}Novo link{% endif %} · Links de pagamento{% endblock %}
+{% block content %}
+<a href="{% url 'links:lista' %}" class="voltar">Voltar para links de pagamento</a>
+<h1 class="pagina-titulo">{% if object %}Editar link{% else %}Novo link de pagamento{% endif %}</h1>
+<p class="pagina-sub">Marque as etapas conforme forem concluídas. Elas também podem ser marcadas direto na lista.</p>
+
+<form method="post" class="formulario formulario-largo" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+
+  <div class="form-grid">
+    {% include "partials/campo.html" with field=form.data %}
+    {% include "partials/campo.html" with field=form.vendedor %}
+    {% include "partials/campo.html" with field=form.cliente classe="span-2" %}
+    {% include "partials/campo.html" with field=form.parcelas %}
+    {% include "partials/campo.html" with field=form.valor %}
+    {% include "partials/campo.html" with field=form.nsu classe="span-2" %}
+  </div>
+
+  <fieldset class="checklist">
+    <legend>Etapas</legend>
+    <div class="checklist-grid">
+      {% for campo in form.campos_etapas %}
+      <div class="form-check">
+        {{ campo }}
+        <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+      </div>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="formulario-acoes">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    {% if not object %}
+      <button type="submit" name="salvar_e_novo" value="1" class="btn btn-secundario">Salvar e lançar outro</button>
+    {% endif %}
+    <a href="{% url 'links:lista' %}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% if object and user.is_supervisor %}
+<form method="post" action="{% url 'links:excluir' object.pk %}" class="zona-perigo"
+      onsubmit="return confirm('Excluir este link? Ele some das listas e dos totais.');">
+  {% csrf_token %}
+  <div>
+    <strong>Excluir link</strong>
+    <p>Use só para lançamentos feitos por engano. O registro sai das listas e dos totais, mas continua guardado no histórico.</p>
+  </div>
+  <button type="submit" class="btn btn-perigo">Excluir</button>
+</form>
+{% endif %}
+
+{% if object %}
+  {% include "partials/historico.html" %}
+{% endif %}
+{% endblock %}

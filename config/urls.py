@@ -7,5 +7,6 @@ urlpatterns = [
     path("cadastros/", include("apps.cadastros.urls")),
     path("pix/", include("apps.pix.urls")),
     path("estornos/", include("apps.estornos.urls")),
+    path("links/", include("apps.links.urls")),
     path("", include("apps.core.urls")),
 ]

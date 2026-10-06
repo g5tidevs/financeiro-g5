@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}Links de pagamento{% endblock %}
+{% block content %}
+<div class="barra-acoes">
+  <div>
+    <h1 class="pagina-titulo">Links de pagamento</h1>
+    <p class="pagina-sub mb-0">Clique em Sim ou Não nas etapas para alterá-las.</p>
+  </div>
+  <a href="{% url 'links:novo' %}" class="btn btn-primario">Novo link</a>
+</div>
+
+<form method="get" class="painel-filtros" aria-label="Filtros">
+  {% if filtro.non_field_errors %}
+    <div class="alert alert-danger">{{ filtro.non_field_errors|join:" " }}</div>
+  {% endif %}
+  <div class="filtros-grid">
+    {% for field in filtro %}
+      <div>
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="filtros-acoes">
+    <button type="submit" class="btn btn-primario">Filtrar</button>
+    {% if tem_filtro %}<a href="{% url 'links:lista' %}" class="btn btn-secundario">Limpar filtros</a>{% endif %}
+  </div>
+</form>
+
+<div class="resumo">
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Lançamentos</span>
+    <span class="resumo-valor">{{ resumo.quantidade }}</span>
+  </div>
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Valor total</span>
+    <span class="resumo-valor">{{ resumo.total|default:0|brl }}</span>
+  </div>
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Completos</span>
+    <span class="resumo-valor">{{ resumo.completos }}</span>
+  </div>
+  <div class="resumo-item resumo-alerta">
+    <span class="resumo-rotulo">Com pendência</span>
+    <span class="resumo-valor">{{ resumo.pendentes }}</span>
+  </div>
+</div>
+
+<nav class="atalhos" aria-label="Pendências por etapa">
+  <span class="atalhos-rotulo">Falta:</span>
+  {% for a in atalhos %}
+    <a href="{{ a.url }}" class="atalho {% if a.ativo %}ativo{% endif %}" {% if a.ativo %}aria-current="true"{% endif %}>
+      {{ a.rotulo }} <strong>{{ a.quantidade }}</strong>
+    </a>
+  {% endfor %}
+</nav>
+
+<div class="tabela-container">
+  <table class="table tabela">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Vendedor</th>
+        <th>Cliente</th>
+        <th class="num">Parc.</th>
+        <th class="num">Valor</th>
+        <th>NSU</th>
+        {% for campo, rotulo in etapas %}<th>{{ rotulo }}</th>{% endfor %}
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in page_obj %}
+      <tr>
+        <td>{{ l.data|date:"d/m/Y" }}</td>
+        <td>
+          {{ l.vendedor.nome }}
+          <span class="texto-secundario">{{ l.vendedor.loja }}</span>
+        </td>
+        <td>{{ l.cliente }}</td>
+        <td class="num">{{ l.parcelas }}x</td>
+        <td class="num">{{ l.valor|brl }}</td>
+        <td class="nsu">{{ l.nsu|default:"—" }}</td>
+        {% for campo, rotulo in etapas %}
+        <td>
+          <form method="post" action="{% url 'links:etapa' l.pk campo %}">
+            {% csrf_token %}
+            <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
+            {% if l|atributo:campo %}
+              <button type="submit" class="selo selo-ok selo-botao"
+                      aria-label="{{ rotulo }}: sim. Clique para desmarcar" title="Clique para desmarcar">Sim</button>
+            {% else %}
+              <button type="submit" class="selo selo-pendente selo-botao"
+                      aria-label="{{ rotulo }}: não. Clique para marcar" title="Clique para marcar">Não</button>
+            {% endif %}
+          </form>
+        </td>
+        {% endfor %}
+        <td class="text-end acoes"><a href="{% url 'links:editar' l.pk %}">Editar</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="11" class="vazio">
+          {% if tem_filtro %}
+            Nenhum link com esses filtros. Amplie o período ou clique em “Limpar filtros”.
+          {% else %}
+            Nenhum link lançado ainda. Use o botão “Novo link” para registrar o primeiro.
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="paginacao" aria-label="Paginação">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&{{ filtros_url }}">Anterior</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&{{ filtros_url }}">Próxima</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

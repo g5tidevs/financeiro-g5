@@ -29,7 +29,10 @@
             <a class="nav-link {% if rota == 'home' %}active{% endif %}" href="{% url 'core:home' %}"
                {% if rota == 'home' %}aria-current="page"{% endif %}>Início</a>
           </li>
-          <li class="nav-item"><span class="nav-link disabled">Links de pagamento</span></li>
+          <li class="nav-item">
+            <a class="nav-link {% if app == 'links' %}active{% endif %}" href="{% url 'links:lista' %}"
+               {% if app == 'links' %}aria-current="page"{% endif %}>Links de pagamento</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link {% if app == 'pix' %}active{% endif %}" href="{% url 'pix:lista' %}"
                {% if app == 'pix' %}aria-current="page"{% endif %}>Devolução de Pix</a>

@@ -29,6 +29,7 @@ LOCAL_APPS = [
     "apps.cadastros",
     "apps.pix",
     "apps.estornos",
+    "apps.links"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
