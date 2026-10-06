@@ -1,0 +1,24 @@
+<section class="historico" aria-labelledby="titulo-historico">
+  <h2 id="titulo-historico">Histórico de alterações</h2>
+  {% if historico %}
+  <ol class="historico-lista">
+    {% for item in historico %}
+    <li>
+      <div class="historico-cabecalho">
+        <strong>{{ item.acao }}</strong> por {{ item.usuario|default:"Sistema" }}
+        <time datetime="{{ item.data|date:'c' }}">{{ item.data|date:"d/m/Y H:i" }}</time>
+      </div>
+      {% if item.mudancas %}
+      <ul class="historico-mudancas">
+        {% for m in item.mudancas %}
+        <li><span class="historico-campo">{{ m.campo }}:</span> <del>{{ m.de }}</del> → <ins>{{ m.para }}</ins></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="historico-vazio">Nenhuma alteração registrada.</p>
+  {% endif %}
+</section>

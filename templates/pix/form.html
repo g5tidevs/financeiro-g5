@@ -49,4 +49,7 @@
   <button type="submit" class="btn btn-perigo">Excluir</button>
 </form>
 {% endif %}
+{% if object %}
+  {% include "partials/historico.html" %}
+{% endif %}
 {% endblock %}

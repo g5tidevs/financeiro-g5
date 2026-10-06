@@ -6,6 +6,7 @@ from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView
 
 from apps.contas.mixins import SupervisorRequiredMixin
+from apps.core.historico import montar_historico
 from apps.core.utils import redirecionar_de_volta
 
 from .forms import DevolucaoPixForm, PixFiltroForm
@@ -71,6 +72,10 @@ class PixUpdateView(PixFormMixin, UpdateView):
     def get_queryset(self):
         return DevolucaoPix.objects.ativos()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["historico"] = montar_historico(self.object)
+        return context
 
 class PixConciliarView(View):
     """Marca ou desmarca a conciliação direto da lista."""

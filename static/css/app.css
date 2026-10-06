@@ -148,3 +148,22 @@ body { font-variant-numeric: tabular-nums; }
 .zona-perigo p { margin: .25rem 0 0; font-size: .9rem; color: var(--tinta-suave); }
 .btn-perigo { background: #b42318; color: #fff; }
 .btn-perigo:hover, .btn-perigo:focus { background: #8f1c13; color: #fff; }
+
+/* ===== Histórico de alterações ===== */
+.historico { max-width: 720px; margin-top: 2.5rem; }
+.historico h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+.historico-lista { list-style: none; margin: 0; padding: 0 0 0 1.25rem; border-left: 2px solid var(--linha); }
+.historico-lista > li { position: relative; padding-bottom: 1.25rem; }
+.historico-lista > li::before {
+  content: ""; position: absolute; left: calc(-1.25rem - 6px); top: .35rem;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--verde-navbar); border: 2px solid var(--cinza);
+}
+.historico-cabecalho { font-size: .92rem; }
+.historico-cabecalho time { color: var(--tinta-suave); margin-left: .5rem; font-size: .85rem; }
+.historico-mudancas { list-style: none; margin: .4rem 0 0; padding: .6rem .8rem; background: var(--papel); border: 1px solid var(--linha); font-size: .88rem; }
+.historico-mudancas li + li { margin-top: .25rem; }
+.historico-campo { color: var(--tinta-suave); }
+.historico del { color: #8a5a55; }
+.historico ins { text-decoration: none; font-weight: 500; color: var(--verde-rodape); }
+.historico-vazio { color: var(--tinta-suave); }
