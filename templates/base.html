@@ -34,7 +34,10 @@
             <a class="nav-link {% if app == 'pix' %}active{% endif %}" href="{% url 'pix:lista' %}"
                {% if app == 'pix' %}aria-current="page"{% endif %}>Devolução de Pix</a>
           </li>
-          <li class="nav-item"><span class="nav-link disabled">Estorno de cartão</span></li>
+          <li class="nav-item">
+            <a class="nav-link {% if app == 'estornos' %}active{% endif %}" href="{% url 'estornos:lista' %}"
+               {% if app == 'estornos' %}aria-current="page"{% endif %}>Estorno de cartão</a>
+          </li>
           {% if user.is_supervisor %}
           <li class="nav-item">
             <a class="nav-link {% if app == 'cadastros' %}active{% endif %}" href="{% url 'cadastros:lista' 'lojas' %}"

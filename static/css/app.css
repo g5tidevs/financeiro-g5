@@ -167,3 +167,11 @@ body { font-variant-numeric: tabular-nums; }
 .historico del { color: #8a5a55; }
 .historico ins { text-decoration: none; font-weight: 500; color: var(--verde-rodape); }
 .historico-vazio { color: var(--tinta-suave); }
+
+
+/* ===== Estornos ===== */
+.texto-secundario { display: block; font-size: .8rem; color: var(--tinta-suave); }
+.nsu { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: .88rem; }
+.selo-botao { border: 0; cursor: pointer; }
+.selo-botao:hover, .selo-botao:focus-visible { text-decoration: underline; filter: brightness(.95); }
+.aviso-confirmacao { background: #fdf1d6; border: 1px solid #f0d28a; padding: .75rem 1rem; margin-bottom: 1rem; }

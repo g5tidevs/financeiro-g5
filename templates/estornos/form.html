@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Editar estorno{% else %}Novo estorno{% endif %} · Estorno de cartão{% endblock %}
+{% block content %}
+<a href="{% url 'estornos:lista' %}" class="voltar">Voltar para estornos de cartão</a>
+<h1 class="pagina-titulo">{% if object %}Editar estorno{% else %}Novo estorno de cartão{% endif %}</h1>
+<p class="pagina-sub">O NSU é o código da transação no comprovante da venda. No motivo, os já usados aparecem como sugestão.</p>
+
+<form method="post" class="formulario formulario-largo" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+
+  <div class="form-grid">
+    {% include "partials/campo.html" with field=form.data %}
+    {% include "partials/campo.html" with field=form.loja %}
+    {% include "partials/campo.html" with field=form.cliente %}
+    {% include "partials/campo.html" with field=form.contato_cliente %}
+    {% include "partials/campo.html" with field=form.data_venda %}
+    {% include "partials/campo.html" with field=form.valor %}
+    {% include "partials/campo.html" with field=form.nsu classe="span-2" %}
+
+    {% if form.estorno_mesmo_nsu or form.confirmar_nsu.value %}
+    <div class="aviso-confirmacao span-2">
+      <div class="form-check">
+        {{ form.confirmar_nsu }}
+        <label class="form-check-label" for="{{ form.confirmar_nsu.id_for_label }}">{{ form.confirmar_nsu.label }}</label>
+      </div>
+    </div>
+    {% endif %}
+
+    {% include "partials/campo.html" with field=form.motivo classe="span-2" %}
+    <datalist id="motivos-sugeridos">
+      {% for motivo in form.sugestoes_motivo %}<option value="{{ motivo }}">{% endfor %}
+    </datalist>
+  </div>
+
+  <div class="form-check">
+    {{ form.solicitado_banco }}
+    <label class="form-check-label" for="{{ form.solicitado_banco.id_for_label }}">{{ form.solicitado_banco.label }}</label>
+  </div>
+  <div class="form-check">
+    {{ form.conciliado }}
+    <label class="form-check-label" for="{{ form.conciliado.id_for_label }}">{{ form.conciliado.label }}</label>
+  </div>
+
+  <div class="formulario-acoes">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    {% if not object %}
+      <button type="submit" name="salvar_e_novo" value="1" class="btn btn-secundario">Salvar e lançar outro</button>
+    {% endif %}
+    <a href="{% url 'estornos:lista' %}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% if object and user.is_supervisor %}
+<form method="post" action="{% url 'estornos:excluir' object.pk %}" class="zona-perigo"
+      onsubmit="return confirm('Excluir este estorno? Ele some das listas e dos totais.');">
+  {% csrf_token %}
+  <div>
+    <strong>Excluir estorno</strong>
+    <p>Use só para lançamentos feitos por engano. O registro sai das listas e dos totais, mas continua guardado no histórico.</p>
+  </div>
+  <button type="submit" class="btn btn-perigo">Excluir</button>
+</form>
+{% endif %}
+
+{% if object %}
+  {% include "partials/historico.html" %}
+{% endif %}
+{% endblock %}

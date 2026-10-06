@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}Estorno de cartão{% endblock %}
+{% block content %}
+<div class="barra-acoes">
+  <div>
+    <h1 class="pagina-titulo">Estorno de cartão</h1>
+    <p class="pagina-sub mb-0">Clique na situação das colunas Safra e EJL para alterá-la.</p>
+  </div>
+  <a href="{% url 'estornos:novo' %}" class="btn btn-primario">Novo estorno</a>
+</div>
+
+<form method="get" class="painel-filtros" aria-label="Filtros">
+  {% if filtro.non_field_errors %}
+    <div class="alert alert-danger">{{ filtro.non_field_errors|join:" " }}</div>
+  {% endif %}
+  <div class="filtros-grid">
+    {% for field in filtro %}
+      <div>
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="filtros-acoes">
+    <button type="submit" class="btn btn-primario">Filtrar</button>
+    {% if tem_filtro %}<a href="{% url 'estornos:lista' %}" class="btn btn-secundario">Limpar filtros</a>{% endif %}
+  </div>
+</form>
+
+<div class="resumo">
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Lançamentos</span>
+    <span class="resumo-valor">{{ resumo.quantidade }}</span>
+  </div>
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Valor total</span>
+    <span class="resumo-valor">{{ resumo.total|default:0|brl }}</span>
+  </div>
+  <div class="resumo-item resumo-alerta">
+    <span class="resumo-rotulo">Falta solicitar no Safra</span>
+    <span class="resumo-valor">{{ resumo.total_sem_safra|default:0|brl }}</span>
+    <span class="resumo-detalhe">{{ resumo.sem_safra }} estorno{{ resumo.sem_safra|pluralize }}</span>
+  </div>
+  <div class="resumo-item resumo-alerta">
+    <span class="resumo-rotulo">Pendentes na EJL</span>
+    <span class="resumo-valor">{{ resumo.total_sem_ejl|default:0|brl }}</span>
+    <span class="resumo-detalhe">{{ resumo.sem_ejl }} estorno{{ resumo.sem_ejl|pluralize }}</span>
+  </div>
+</div>
+
+<div class="tabela-container">
+  <table class="table tabela">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Loja</th>
+        <th>Cliente</th>
+        <th>Venda</th>
+        <th class="num">Valor</th>
+        <th>NSU</th>
+        <th>Safra</th>
+        <th>EJL</th>
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in page_obj %}
+      <tr>
+        <td>{{ e.data|date:"d/m/Y" }}</td>
+        <td>{{ e.loja }}</td>
+        <td>
+          {{ e.cliente }}
+          <span class="texto-secundario">{{ e.motivo }}</span>
+        </td>
+        <td>{{ e.data_venda|date:"d/m/Y" }}</td>
+        <td class="num">{{ e.valor|brl }}</td>
+        <td class="nsu">{{ e.nsu }}</td>
+        <td>
+          <form method="post" action="{% url 'estornos:safra' e.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
+            {% if e.solicitado_banco %}
+              <button type="submit" class="selo selo-ok selo-botao" title="Clique para desmarcar">Solicitado</button>
+            {% else %}
+              <button type="submit" class="selo selo-pendente selo-botao" title="Clique para marcar como solicitado">Pendente</button>
+            {% endif %}
+          </form>
+        </td>
+        <td>
+          <form method="post" action="{% url 'estornos:conciliar' e.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
+            {% if e.conciliado %}
+              <button type="submit" class="selo selo-ok selo-botao" title="Clique para desmarcar">Conciliado</button>
+            {% else %}
+              <button type="submit" class="selo selo-pendente selo-botao" title="Clique para marcar como conciliado">Pendente</button>
+            {% endif %}
+          </form>
+        </td>
+        <td class="text-end acoes"><a href="{% url 'estornos:editar' e.pk %}">Editar</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9" class="vazio">
+          {% if tem_filtro %}
+            Nenhum estorno com esses filtros. Amplie o período ou clique em “Limpar filtros”.
+          {% else %}
+            Nenhum estorno lançado ainda. Use o botão “Novo estorno” para registrar o primeiro.
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="paginacao" aria-label="Paginação">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&{{ filtros_url }}">Anterior</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&{{ filtros_url }}">Próxima</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

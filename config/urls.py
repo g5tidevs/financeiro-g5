@@ -6,5 +6,6 @@ urlpatterns = [
     path("contas/", include("apps.contas.urls")),
     path("cadastros/", include("apps.cadastros.urls")),
     path("pix/", include("apps.pix.urls")),
+    path("estornos/", include("apps.estornos.urls")),
     path("", include("apps.core.urls")),
 ]
