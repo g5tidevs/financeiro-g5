@@ -191,3 +191,37 @@ body { font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) {
   .checklist-grid { grid-template-columns: 1fr; }
 }
+
+
+
+/* ===== Dashboard: quadros por módulo ===== */
+.cards-modulos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.card-modulo { background: var(--papel); border: 1px solid var(--linha); border-top: 4px solid var(--verde-navbar); padding: 1.1rem 1.25rem; display: flex; flex-direction: column; }
+.card-modulo h2 { font-size: .95rem; font-weight: 600; color: var(--tinta-suave); margin-bottom: .5rem; }
+.card-numero { font-size: 1.7rem; font-weight: 600; margin: 0; line-height: 1.2; }
+.card-detalhe { color: var(--tinta-suave); font-size: .9rem; margin-bottom: .75rem; }
+.card-linhas { margin: 0 0 .75rem; font-size: .9rem; }
+.card-linhas > div { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-top: 1px solid var(--linha); }
+.card-linhas dt { font-weight: 400; color: var(--tinta-suave); }
+.card-linhas dd { margin: 0; font-weight: 500; white-space: nowrap; }
+.card-linhas .alerta dd { color: #7a4b00; }
+.card-link { margin-top: auto; font-size: .9rem; font-weight: 500; }
+.progresso { height: 8px; background: #eceeed; border-radius: 999px; overflow: hidden; margin-bottom: .75rem; }
+.progresso-barra { height: 100%; background: var(--verde-rodape); }
+
+/* ===== Dashboard: painéis e gráficos ===== */
+.graficos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.painel { background: var(--papel); border: 1px solid var(--linha); padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; }
+.graficos .painel { margin-bottom: 0; }
+.painel h2 { font-size: 1.05rem; font-weight: 600; margin-bottom: .15rem; }
+.painel-sub { color: var(--tinta-suave); font-size: .85rem; margin-bottom: 1rem; }
+.painel .tabela-container { border: 0; }
+.grafico { position: relative; height: 280px; }
+.filtros-acoes { flex-wrap: wrap; align-items: center; }
+
+
+/* ===== Página inicial: cartões clicáveis ===== */
+a.modulo { display: block; color: inherit; text-decoration: none; transition: border-color .15s, box-shadow .15s; }
+a.modulo:hover { border-color: var(--verde-navbar); box-shadow: 0 2px 8px rgba(4, 92, 60, .08); }
+a.modulo:hover h2 { color: var(--verde-rodape); }
+.modulo-supervisor { border-left-color: var(--verde-rodape); }

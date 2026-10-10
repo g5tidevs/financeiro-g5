@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="pagina-titulo">Dashboard</h1>
+<p class="pagina-sub">
+  {{ inicio|date:"d/m/Y" }} a {{ fim|date:"d/m/Y" }} · {% if loja %}{{ loja }}{% else %}Todas as lojas{% endif %}
+</p>
+
+<form method="get" class="painel-filtros" aria-label="Filtros do dashboard">
+  {% if filtro.non_field_errors %}
+    <div class="alert alert-danger">{{ filtro.non_field_errors|join:" " }}</div>
+  {% endif %}
+  <div class="filtros-grid">
+    {% for field in filtro %}
+      <div>
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="filtros-acoes">
+    <button type="submit" class="btn btn-primario">Atualizar</button>
+    <nav class="atalhos mb-0" aria-label="Períodos rápidos">
+      {% for p in periodos %}<a href="{{ p.url }}" class="atalho">{{ p.rotulo }}</a>{% endfor %}
+    </nav>
+  </div>
+</form>
+
+{# ===== Números do período ===== #}
+<div class="cards-modulos">
+  <section class="card-modulo">
+    <h2>Devolução de Pix</h2>
+    <p class="card-numero">{{ resumo.pix.total|default:0|brl }}</p>
+    <p class="card-detalhe">{{ resumo.pix.quantidade }} devoluç{{ resumo.pix.quantidade|pluralize:"ão,ões" }}</p>
+    <dl class="card-linhas">
+      <div class="alerta"><dt>Pendente na EJL</dt><dd>{{ resumo.pix.pendente_ejl|default:0|brl }}</dd></div>
+    </dl>
+    <a href="{{ listas.pix }}" class="card-link">Ver pendentes</a>
+  </section>
+
+  <section class="card-modulo">
+    <h2>Estorno de cartão</h2>
+    <p class="card-numero">{{ resumo.estornos.total|default:0|brl }}</p>
+    <p class="card-detalhe">{{ resumo.estornos.quantidade }} estorno{{ resumo.estornos.quantidade|pluralize }}</p>
+    <dl class="card-linhas">
+      <div class="alerta"><dt>Falta solicitar no Safra</dt><dd>{{ resumo.estornos.sem_safra|default:0|brl }}</dd></div>
+      <div class="alerta"><dt>Pendente na EJL</dt><dd>{{ resumo.estornos.pendente_ejl|default:0|brl }}</dd></div>
+    </dl>
+    <a href="{{ listas.estornos }}" class="card-link">Ver estornos</a>
+  </section>
+
+  <section class="card-modulo">
+    <h2>Links de pagamento</h2>
+    <p class="card-numero">{{ resumo.links.quantidade }} link{{ resumo.links.quantidade|pluralize }}</p>
+    <p class="card-detalhe">{{ resumo.links.total|default:0|brl }} em valor</p>
+    <div class="progresso" role="progressbar" aria-valuenow="{{ resumo.links.percentual }}" aria-valuemin="0" aria-valuemax="100"
+         aria-label="Links completos">
+      <div class="progresso-barra" data-percentual="{{ resumo.links.percentual }}"></div>
+    </div>
+    <dl class="card-linhas">
+      <div><dt>Completos</dt><dd>{{ resumo.links.completos }} ({{ resumo.links.percentual }}%)</dd></div>
+      <div class="alerta"><dt>Com pendência</dt><dd>{{ resumo.links.pendentes }}</dd></div>
+    </dl>
+    <a href="{{ listas.links }}" class="card-link">Ver pendentes</a>
+  </section>
+</div>
+
+{# ===== Gráficos dos últimos 12 meses ===== #}
+<div class="graficos">
+  <section class="painel">
+    <h2>Pix e estornos por mês</h2>
+    <p class="painel-sub">Valores dos últimos 12 meses</p>
+    <div class="grafico">
+      <canvas id="grafico-valores" role="img" aria-label="Gráfico de barras com os valores mensais de devoluções de Pix e estornos de cartão"></canvas>
+    </div>
+  </section>
+  <section class="painel">
+    <h2>Links por mês</h2>
+    <p class="painel-sub">Completos e com pendência, últimos 12 meses</p>
+    <div class="grafico">
+      <canvas id="grafico-links" role="img" aria-label="Gráfico de barras empilhadas com a quantidade mensal de links completos e com pendência"></canvas>
+    </div>
+  </section>
+</div>
+
+{# ===== Por loja ===== #}
+{% if por_loja is not None %}
+<section class="painel">
+  <h2>Por loja</h2>
+  <p class="painel-sub">Ordenado pelas lojas com mais pendências no período</p>
+  <div class="tabela-container">
+    <table class="table tabela">
+      <thead>
+        <tr>
+          <th>Loja</th>
+          <th class="num">Pix</th>
+          <th class="num">Estornos</th>
+          <th class="num">Links</th>
+          <th class="num">Pendências</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in por_loja %}
+        <tr>
+          <td>{{ l.nome }}</td>
+          <td class="num">{{ l.pix|brl }}</td>
+          <td class="num">{{ l.estornos|brl }}</td>
+          <td class="num">{{ l.links }}</td>
+          <td class="num">
+            {% if l.total_pendencias %}<span class="selo selo-pendente">{{ l.total_pendencias }}</span>{% else %}<span class="selo selo-ok">0</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="vazio">Nenhum lançamento no período.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<div class="graficos">
+  {# ===== Vendedores com links pendentes ===== #}
+  <section class="painel">
+    <h2>Links pendentes por vendedor</h2>
+    <p class="painel-sub">Quem tem mais links com etapas em aberto no período</p>
+    <div class="tabela-container">
+      <table class="table tabela">
+        <thead>
+          <tr>
+            <th>Vendedor</th>
+            <th class="num">Pendentes</th>
+            <th class="num" title="Falta pagamento">PG</th>
+            <th class="num" title="Falta lançar no caixa">CX</th>
+            <th class="num" title="Falta NC assinada">NC</th>
+            <th class="num" title="Falta documentação">DOC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in vendedores %}
+          <tr>
+            <td>{{ v.vendedor__nome }}<span class="texto-secundario">{{ v.vendedor__loja__nome }}</span></td>
+            <td class="num"><strong>{{ v.pendentes }}</strong></td>
+            <td class="num">{{ v.falta_pago }}</td>
+            <td class="num">{{ v.falta_caixa }}</td>
+            <td class="num">{{ v.falta_nc }}</td>
+            <td class="num">{{ v.falta_doc }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="vazio">Nenhum link pendente no período.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {# ===== Itens parados ===== #}
+  <section class="painel">
+    <h2>Parados há mais de {{ dias }} dias</h2>
+    <p class="painel-sub">
+      {{ parados.total }} ite{{ parados.total|pluralize:"m,ns" }} em aberto, de qualquer período:
+      {{ parados.contagem.Pix }} Pix, {{ parados.contagem.Estorno }} estorno{{ parados.contagem.Estorno|pluralize }},
+      {{ parados.contagem.Link }} link{{ parados.contagem.Link|pluralize }}
+    </p>
+    <div class="tabela-container">
+      <table class="table tabela">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Módulo</th>
+            <th>Cliente</th>
+            <th>Falta</th>
+            <th class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in parados.itens %}
+          <tr>
+            <td>{{ item.data|date:"d/m/Y" }}<span class="texto-secundario">{{ item.dias }} dias</span></td>
+            <td>{{ item.modulo }}</td>
+            <td>{{ item.cliente }}<span class="texto-secundario">{{ item.loja }}</span></td>
+            <td>{{ item.falta }}</td>
+            <td class="text-end acoes"><a href="{{ item.url }}">Abrir</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="vazio">Nada parado há mais de {{ dias }} dias.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+{{ grafico|json_script:"dados-grafico" }}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  const dados = JSON.parse(document.getElementById("dados-grafico").textContent);
+  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+
+  document.querySelectorAll(".progresso-barra[data-percentual]").forEach((barra) => {
+    barra.style.width = `${barra.dataset.percentual}%`;
+  });
+
+  Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+  Chart.defaults.color = "#5b6b63";
+
+  new Chart(document.getElementById("grafico-valores"), {
+    type: "bar",
+    data: {
+      labels: dados.rotulos,
+      datasets: [
+        { label: "Devolução de Pix", data: dados.pix, backgroundColor: "#045c3c" },
+        { label: "Estorno de cartão", data: dados.estornos, backgroundColor: "#5a8c03" },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${brl.format(c.parsed.y)}` } },
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { beginAtZero: true, ticks: { callback: (v) => brl.format(v) } },
+      },
+    },
+  });
+
+  new Chart(document.getElementById("grafico-links"), {
+    type: "bar",
+    data: {
+      labels: dados.rotulos,
+      datasets: [
+        { label: "Completos", data: dados.links_completos, backgroundColor: "#045c3c" },
+        { label: "Com pendência", data: dados.links_pendentes, backgroundColor: "#d99a00" },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" } },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } },
+      },
+    },
+  });
+</script>
+{% endblock %}

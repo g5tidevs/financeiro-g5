@@ -4,17 +4,23 @@
 <p class="pagina-sub">Escolha o controle que você quer lançar ou consultar.</p>
 
 <div class="modulos">
-  <section class="modulo">
+  <a class="modulo" href="{% url 'links:lista' %}">
     <h2>Links de pagamento</h2>
     <p>Acompanhe cada link do pagamento até o envio da documentação: pago, no caixa, NC assinada e DOC.</p>
-  </section>
-  <section class="modulo">
+  </a>
+  <a class="modulo" href="{% url 'pix:lista' %}">
     <h2>Devolução de Pix</h2>
-    <p>Registre devoluções por loja, banco e motivo, e marque o que já foi conciliado pela EJL.</p>
-  </section>
-  <section class="modulo">
+    <p>Registre devoluções por loja e banco, e marque o que já foi conciliado pela EJL.</p>
+  </a>
+  <a class="modulo" href="{% url 'estornos:lista' %}">
     <h2>Estorno de cartão</h2>
     <p>Controle estornos pelo NSU, a solicitação no Safra e a conciliação.</p>
-  </section>
+  </a>
+  {% if user.is_supervisor %}
+  <a class="modulo modulo-supervisor" href="{% url 'dashboard:painel' %}">
+    <h2>Dashboard</h2>
+    <p>Totais do período, pendências por loja e por vendedor, e itens parados.</p>
+  </a>
+  {% endif %}
 </div>
 {% endblock %}

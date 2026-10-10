@@ -11,7 +11,11 @@ environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = [
+    "192.168.87.33",
+    "localhost",
+    "127.0.0.1"
+]
 
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -29,7 +33,8 @@ LOCAL_APPS = [
     "apps.cadastros",
     "apps.pix",
     "apps.estornos",
-    "apps.links"
+    "apps.links",
+    "apps.dashboard",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
