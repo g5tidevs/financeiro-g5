@@ -29,38 +29,38 @@
 
 {# ===== Números do período ===== #}
 <div class="cards-modulos">
-  <section class="card-modulo">
+  <section class="card-modulo{% if resumo.pix.pendente_ejl %} com-pendencia{% endif %}">
     <h2>Devolução de Pix</h2>
-    <p class="card-numero">{{ resumo.pix.total|default:0|brl }}</p>
+    <p class="card-numero">{{ resumo.pix.total|default:0|dinheiro }}</p>
     <p class="card-detalhe">{{ resumo.pix.quantidade }} devoluç{{ resumo.pix.quantidade|pluralize:"ão,ões" }}</p>
     <dl class="card-linhas">
-      <div class="alerta"><dt>Pendente na EJL</dt><dd>{{ resumo.pix.pendente_ejl|default:0|brl }}</dd></div>
+      <div{% if resumo.pix.pendente_ejl %} class="alerta"{% endif %}><dt>Pendente na EJL</dt><dd>{{ resumo.pix.pendente_ejl|default:0|dinheiro }}</dd></div>
     </dl>
     <a href="{{ listas.pix }}" class="card-link">Ver pendentes</a>
   </section>
 
-  <section class="card-modulo">
+  <section class="card-modulo{% if resumo.estornos.sem_safra or resumo.estornos.pendente_ejl %} com-pendencia{% endif %}">
     <h2>Estorno de cartão</h2>
-    <p class="card-numero">{{ resumo.estornos.total|default:0|brl }}</p>
+    <p class="card-numero">{{ resumo.estornos.total|default:0|dinheiro }}</p>
     <p class="card-detalhe">{{ resumo.estornos.quantidade }} estorno{{ resumo.estornos.quantidade|pluralize }}</p>
     <dl class="card-linhas">
-      <div class="alerta"><dt>Falta solicitar no Safra</dt><dd>{{ resumo.estornos.sem_safra|default:0|brl }}</dd></div>
-      <div class="alerta"><dt>Pendente na EJL</dt><dd>{{ resumo.estornos.pendente_ejl|default:0|brl }}</dd></div>
+      <div{% if resumo.estornos.sem_safra %} class="alerta"{% endif %}><dt>Falta solicitar no Safra</dt><dd>{{ resumo.estornos.sem_safra|default:0|dinheiro }}</dd></div>
+      <div{% if resumo.estornos.pendente_ejl %} class="alerta"{% endif %}><dt>Pendente na EJL</dt><dd>{{ resumo.estornos.pendente_ejl|default:0|dinheiro }}</dd></div>
     </dl>
     <a href="{{ listas.estornos }}" class="card-link">Ver estornos</a>
   </section>
 
-  <section class="card-modulo">
+  <section class="card-modulo{% if resumo.links.pendentes %} com-pendencia{% endif %}">
     <h2>Links de pagamento</h2>
     <p class="card-numero">{{ resumo.links.quantidade }} link{{ resumo.links.quantidade|pluralize }}</p>
-    <p class="card-detalhe">{{ resumo.links.total|default:0|brl }} em valor</p>
+    <p class="card-detalhe">{{ resumo.links.total|default:0|dinheiro }} em valor</p>
     <div class="progresso" role="progressbar" aria-valuenow="{{ resumo.links.percentual }}" aria-valuemin="0" aria-valuemax="100"
          aria-label="Links completos">
       <div class="progresso-barra" data-percentual="{{ resumo.links.percentual }}"></div>
     </div>
     <dl class="card-linhas">
       <div><dt>Completos</dt><dd>{{ resumo.links.completos }} ({{ resumo.links.percentual }}%)</dd></div>
-      <div class="alerta"><dt>Com pendência</dt><dd>{{ resumo.links.pendentes }}</dd></div>
+      <div{% if resumo.links.pendentes %} class="alerta"{% endif %}><dt>Com pendência</dt><dd>{{ resumo.links.pendentes }}</dd></div>
     </dl>
     <a href="{{ listas.links }}" class="card-link">Ver pendentes</a>
   </section>
@@ -104,11 +104,11 @@
         {% for l in por_loja %}
         <tr>
           <td>{{ l.nome }}</td>
-          <td class="num">{{ l.pix|brl }}</td>
-          <td class="num">{{ l.estornos|brl }}</td>
+          <td class="num">{{ l.pix|dinheiro }}</td>
+          <td class="num">{{ l.estornos|dinheiro }}</td>
           <td class="num">{{ l.links }}</td>
           <td class="num">
-            {% if l.total_pendencias %}<span class="selo selo-pendente">{{ l.total_pendencias }}</span>{% else %}<span class="selo selo-ok">0</span>{% endif %}
+            {% if l.total_pendencias %}<span class="selo selo-contagem selo-pendente">{{ l.total_pendencias }}</span>{% else %}<span class="selo selo-contagem selo-ok">0</span>{% endif %}
           </td>
         </tr>
         {% empty %}
@@ -206,22 +206,24 @@
   });
 
   Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-  Chart.defaults.color = "#5b6b63";
+  Chart.defaults.color = "#56665e";
+  Chart.defaults.borderColor = "#e8ede9";
+  const legenda = { position: "bottom", labels: { usePointStyle: true, pointStyle: "rectRounded", padding: 16 } };
 
   new Chart(document.getElementById("grafico-valores"), {
     type: "bar",
     data: {
       labels: dados.rotulos,
       datasets: [
-        { label: "Devolução de Pix", data: dados.pix, backgroundColor: "#045c3c" },
-        { label: "Estorno de cartão", data: dados.estornos, backgroundColor: "#5a8c03" },
+        { label: "Devolução de Pix", data: dados.pix, backgroundColor: "#045c3c", borderRadius: 3, maxBarThickness: 22 },
+        { label: "Estorno de cartão", data: dados.estornos, backgroundColor: "#5a8c03", borderRadius: 3, maxBarThickness: 22 },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "bottom" },
+        legend: legenda,
         tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${brl.format(c.parsed.y)}` } },
       },
       scales: {
@@ -236,14 +238,14 @@
     data: {
       labels: dados.rotulos,
       datasets: [
-        { label: "Completos", data: dados.links_completos, backgroundColor: "#045c3c" },
-        { label: "Com pendência", data: dados.links_pendentes, backgroundColor: "#d99a00" },
+        { label: "Completos", data: dados.links_completos, backgroundColor: "#045c3c", maxBarThickness: 32 },
+        { label: "Com pendência", data: dados.links_pendentes, backgroundColor: "#c58a00", maxBarThickness: 32 },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: "bottom" } },
+      plugins: { legend: legenda },
       scales: {
         x: { stacked: true, grid: { display: false } },
         y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } },

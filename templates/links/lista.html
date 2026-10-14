@@ -5,7 +5,7 @@
 <div class="barra-acoes">
   <div>
     <h1 class="pagina-titulo">Links de pagamento</h1>
-    <p class="pagina-sub mb-0">Clique em Sim ou Não nas etapas para alterá-las.</p>
+    <p class="pagina-sub mb-0">Clique numa etapa para marcar ou desmarcar.</p>
   </div>
   <a href="{% url 'links:novo' %}" class="btn btn-primario">Novo link</a>
 </div>
@@ -35,13 +35,13 @@
   </div>
   <div class="resumo-item">
     <span class="resumo-rotulo">Valor total</span>
-    <span class="resumo-valor">{{ resumo.total|default:0|brl }}</span>
+    <span class="resumo-valor">{{ resumo.total|default:0|dinheiro }}</span>
   </div>
   <div class="resumo-item">
     <span class="resumo-rotulo">Completos</span>
     <span class="resumo-valor">{{ resumo.completos }}</span>
   </div>
-  <div class="resumo-item resumo-alerta">
+  <div class="resumo-item{% if resumo.pendentes %} resumo-alerta{% endif %}">
     <span class="resumo-rotulo">Com pendência</span>
     <span class="resumo-valor">{{ resumo.pendentes }}</span>
   </div>
@@ -66,7 +66,7 @@
         <th class="num">Parc.</th>
         <th class="num">Valor</th>
         <th>NSU</th>
-        {% for campo, rotulo in etapas %}<th>{{ rotulo }}</th>{% endfor %}
+        {% for campo, rotulo in etapas %}<th class="etapa-titulo">{{ rotulo }}</th>{% endfor %}
         <th class="text-end">Ações</th>
       </tr>
     </thead>
@@ -80,22 +80,26 @@
         </td>
         <td>{{ l.cliente }}</td>
         <td class="num">{{ l.parcelas }}x</td>
-        <td class="num">{{ l.valor|brl }}</td>
+        <td class="num">{{ l.valor|dinheiro }}</td>
         <td class="nsu">{{ l.nsu|default:"—" }}</td>
         {% for campo, rotulo in etapas %}
-        <td>
+        {% with feita=l|atributo:campo %}
+        <td class="etapa{% if feita %} feita{% endif %}{% if forloop.first %} primeira{% endif %}{% if forloop.last %} ultima{% endif %}">
           <form method="post" action="{% url 'links:etapa' l.pk campo %}">
             {% csrf_token %}
             <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
-            {% if l|atributo:campo %}
-              <button type="submit" class="selo selo-ok selo-botao"
-                      aria-label="{{ rotulo }}: sim. Clique para desmarcar" title="Clique para desmarcar">Sim</button>
+            {% if feita %}
+              <button type="submit" class="etapa-botao"
+                      aria-label="{{ rotulo }}: sim. Clique para desmarcar" title="{{ rotulo }}: feito. Clique para desmarcar">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
             {% else %}
-              <button type="submit" class="selo selo-pendente selo-botao"
-                      aria-label="{{ rotulo }}: não. Clique para marcar" title="Clique para marcar">Não</button>
+              <button type="submit" class="etapa-botao"
+                      aria-label="{{ rotulo }}: não. Clique para marcar" title="{{ rotulo }}: pendente. Clique para marcar"></button>
             {% endif %}
           </form>
         </td>
+        {% endwith %}
         {% endfor %}
         <td class="text-end acoes"><a href="{% url 'links:editar' l.pk %}">Editar</a></td>
       </tr>

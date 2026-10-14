@@ -1,26 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="pagina-titulo">Olá, {{ user.first_name|default:user.username }}</h1>
-<p class="pagina-sub">Escolha o controle que você quer lançar ou consultar.</p>
+{% now "H" as hora %}{% now "l, j \d\e F" as hoje %}
+<header class="inicio-cabecalho">
+  <h1 class="inicio-saudacao">
+    {% if hora < "12" %}Bom dia{% elif hora < "18" %}Boa tarde{% else %}Boa noite{% endif %}, {{ user.first_name|default:user.username }}
+  </h1>
+  <p class="inicio-data">{{ hoje|lower|capfirst }}. Escolha o controle que você quer lançar ou consultar.</p>
+</header>
 
-<div class="modulos">
-  <a class="modulo" href="{% url 'links:lista' %}">
+<nav class="quadro" aria-label="Controles">
+  <a class="quadro-item" href="{% url 'links:lista' %}">
     <h2>Links de pagamento</h2>
-    <p>Acompanhe cada link do pagamento até o envio da documentação: pago, no caixa, NC assinada e DOC.</p>
+    <p>Acompanhe cada link do pagamento até o envio da documentação.</p>
+    <ol class="trilho" aria-label="Etapas acompanhadas">
+      <li>Pago</li><li>No caixa</li><li>NC assinada</li><li>DOC enviado</li>
+    </ol>
   </a>
-  <a class="modulo" href="{% url 'pix:lista' %}">
+  <a class="quadro-item" href="{% url 'pix:lista' %}">
     <h2>Devolução de Pix</h2>
     <p>Registre devoluções por loja e banco, e marque o que já foi conciliado pela EJL.</p>
+    <ol class="trilho" aria-label="Etapas acompanhadas">
+      <li>Lançada</li><li>Conciliada na EJL</li>
+    </ol>
   </a>
-  <a class="modulo" href="{% url 'estornos:lista' %}">
+  <a class="quadro-item" href="{% url 'estornos:lista' %}">
     <h2>Estorno de cartão</h2>
     <p>Controle estornos pelo NSU, a solicitação no Safra e a conciliação.</p>
+    <ol class="trilho" aria-label="Etapas acompanhadas">
+      <li>Lançado</li><li>Solicitado no Safra</li><li>Conciliado na EJL</li>
+    </ol>
   </a>
-  {% if user.is_supervisor %}
-  <a class="modulo modulo-supervisor" href="{% url 'dashboard:painel' %}">
-    <h2>Dashboard</h2>
-    <p>Totais do período, pendências por loja e por vendedor, e itens parados.</p>
+</nav>
+
+{% if user.is_supervisor %}
+<h2 class="inicio-secao">Supervisão</h2>
+<div class="supervisao">
+  <a href="{% url 'dashboard:painel' %}">
+    <strong>Dashboard</strong>
+    <span>Totais do período, pendências por loja e por vendedor, e itens parados.</span>
   </a>
-  {% endif %}
+  <a href="{% url 'cadastros:lista' 'lojas' %}">
+    <strong>Cadastros</strong>
+    <span>Lojas, vendedores e bancos usados nos formulários.</span>
+  </a>
 </div>
+{% endif %}
 {% endblock %}

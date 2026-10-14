@@ -35,16 +35,16 @@
   </div>
   <div class="resumo-item">
     <span class="resumo-rotulo">Valor total</span>
-    <span class="resumo-valor">{{ resumo.total|default:0|brl }}</span>
+    <span class="resumo-valor">{{ resumo.total|default:0|dinheiro }}</span>
   </div>
-  <div class="resumo-item resumo-alerta">
+  <div class="resumo-item{% if resumo.sem_safra %} resumo-alerta{% endif %}">
     <span class="resumo-rotulo">Falta solicitar no Safra</span>
-    <span class="resumo-valor">{{ resumo.total_sem_safra|default:0|brl }}</span>
+    <span class="resumo-valor">{{ resumo.total_sem_safra|default:0|dinheiro }}</span>
     <span class="resumo-detalhe">{{ resumo.sem_safra }} estorno{{ resumo.sem_safra|pluralize }}</span>
   </div>
-  <div class="resumo-item resumo-alerta">
+  <div class="resumo-item{% if resumo.sem_ejl %} resumo-alerta{% endif %}">
     <span class="resumo-rotulo">Pendentes na EJL</span>
-    <span class="resumo-valor">{{ resumo.total_sem_ejl|default:0|brl }}</span>
+    <span class="resumo-valor">{{ resumo.total_sem_ejl|default:0|dinheiro }}</span>
     <span class="resumo-detalhe">{{ resumo.sem_ejl }} estorno{{ resumo.sem_ejl|pluralize }}</span>
   </div>
 </div>
@@ -74,7 +74,7 @@
           <span class="texto-secundario">{{ e.motivo }}</span>
         </td>
         <td>{{ e.data_venda|date:"d/m/Y" }}</td>
-        <td class="num">{{ e.valor|brl }}</td>
+        <td class="num">{{ e.valor|dinheiro }}</td>
         <td class="nsu">{{ e.nsu }}</td>
         <td>
           <form method="post" action="{% url 'estornos:safra' e.pk %}">

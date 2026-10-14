@@ -35,11 +35,11 @@
   </div>
   <div class="resumo-item">
     <span class="resumo-rotulo">Valor total</span>
-    <span class="resumo-valor">{{ resumo.total|default:0|brl }}</span>
+    <span class="resumo-valor">{{ resumo.total|default:0|dinheiro }}</span>
   </div>
-  <div class="resumo-item resumo-alerta">
+  <div class="resumo-item{% if resumo.pendentes %} resumo-alerta{% endif %}">
     <span class="resumo-rotulo">Pendentes na EJL</span>
-    <span class="resumo-valor">{{ resumo.total_pendente|default:0|brl }}</span>
+    <span class="resumo-valor">{{ resumo.total_pendente|default:0|dinheiro }}</span>
     <span class="resumo-detalhe">{{ resumo.pendentes }} lançamento{{ resumo.pendentes|pluralize }}</span>
   </div>
 </div>
@@ -64,7 +64,7 @@
         <td>{{ d.data|date:"d/m/Y" }}</td>
         <td>{{ d.loja }}</td>
         <td>{{ d.cliente }}</td>
-        <td class="num">{{ d.valor|brl }}</td>
+        <td class="num">{{ d.valor|dinheiro }}</td>
         <td>{{ d.banco.nome }}</td>
         <td>{{ d.motivo }}</td>
         <td>
