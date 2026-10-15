@@ -12,10 +12,6 @@ CAMPO_DATA = forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"})
 
 class EstornoCartaoForm(BootstrapModelForm):
     valor = ValorBRField(label="Valor")
-    confirmar_nsu = forms.BooleanField(
-        label="Confirmo que é outro estorno da mesma venda (ex.: estorno parcial)",
-        required=False,
-    )
 
     class Meta:
         model = EstornoCartao
@@ -33,7 +29,6 @@ class EstornoCartaoForm(BootstrapModelForm):
     def __init__(self, *args, usuario=None, **kwargs):
         super().__init__(*args, **kwargs)
         inst = self.instance
-        self.estorno_mesmo_nsu = None  # preenchido se o NSU já tiver estorno
 
         self.fields["loja"].queryset = Loja.objects.filter(Q(ativo=True) | Q(pk=inst.loja_id))
 
@@ -63,20 +58,18 @@ class EstornoCartaoForm(BootstrapModelForm):
     def clean(self):
         dados = super().clean()
         nsu = dados.get("nsu")
-        nsu_mudou = nsu != self.instance.nsu  # ao editar, só confere se o NSU foi alterado
-        if nsu and nsu_mudou:
+        if nsu:
             repetido = (
                 EstornoCartao.objects.ativos()
                 .filter(nsu=nsu)
                 .exclude(pk=self.instance.pk)
                 .first()
             )
-            if repetido and not dados.get("confirmar_nsu"):
-                self.estorno_mesmo_nsu = repetido
+            if repetido:
                 self.add_error(
                     "nsu",
-                    f"Já existe um estorno com este NSU: {repetido.cliente}, "
-                    f"lançado em {repetido.data:%d/%m/%Y}. Confira para não estornar duas vezes.",
+                    f"Este NSU já tem um estorno: {repetido.cliente}, "
+                    f"lançado em {repetido.data:%d/%m/%Y}.",
                 )
         return dados
 

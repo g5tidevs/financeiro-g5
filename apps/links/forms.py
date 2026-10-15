@@ -48,6 +48,26 @@ class LinkPagamentoForm(BootstrapModelForm):
         return [self[campo] for campo, _ in LinkPagamento.ETAPAS]
 
 
+    def clean(self):
+        dados = super().clean()
+        nsu = dados.get("nsu")
+        if nsu:
+            repetido = (
+                LinkPagamento.objects.ativos()
+                .filter(nsu=nsu)
+                .exclude(pk=self.instance.pk)
+                .select_related("vendedor")
+                .first()
+            )
+            if repetido:
+                self.add_error(
+                    "nsu",
+                    f"Este NSU já está no link de {repetido.cliente} ({repetido.vendedor.nome}), "
+                    f"lançado em {repetido.data:%d/%m/%Y}.",
+                )
+        return dados
+
+
 class LinkFiltroForm(BootstrapFormMixin, forms.Form):
     SITUACOES = [("", "Todos"), ("pendente", "Com pendência"), ("completo", "Completos")] + [
         (campo, f"Falta: {rotulo}") for campo, rotulo in LinkPagamento.ETAPAS

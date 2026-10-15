@@ -21,14 +21,6 @@
     {% include "partials/campo.html" with field=form.valor %}
     {% include "partials/campo.html" with field=form.nsu classe="span-2" %}
 
-    {% if form.estorno_mesmo_nsu or form.confirmar_nsu.value %}
-    <div class="aviso-confirmacao span-2">
-      <div class="form-check">
-        {{ form.confirmar_nsu }}
-        <label class="form-check-label" for="{{ form.confirmar_nsu.id_for_label }}">{{ form.confirmar_nsu.label }}</label>
-      </div>
-    </div>
-    {% endif %}
 
     {% include "partials/campo.html" with field=form.motivo classe="span-2" %}
     <datalist id="motivos-sugeridos">

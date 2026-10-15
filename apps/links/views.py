@@ -9,7 +9,7 @@ from django.views.generic import CreateView, ListView, UpdateView
 from apps.contas.mixins import SupervisorRequiredMixin
 from apps.core.historico import montar_historico
 from apps.core.utils import redirecionar_de_volta
-
+from apps.core.mixins import NsuUnicoMixin
 from .forms import LinkFiltroForm, LinkPagamentoForm
 from .models import LinkPagamento
 
@@ -59,7 +59,7 @@ class LinkListView(ListView):
         return context
 
 
-class LinkFormMixin:
+class LinkFormMixin(NsuUnicoMixin):
     model = LinkPagamento
     form_class = LinkPagamentoForm
     template_name = "links/form.html"

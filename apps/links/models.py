@@ -63,19 +63,11 @@ class LinkPagamento(ModeloBase):
         verbose_name = "Link de pagamento"
         verbose_name_plural = "Links de pagamento"
         ordering = ["-data", "-id"]
-
-    def __str__(self):
-        return f"{self.cliente} - {self.data:%d/%m/%Y}"
-
-    @property
-    def etapas_pendentes(self):
-        return [rotulo for campo, rotulo in self.ETAPAS if not getattr(self, campo)]
-
-    @property
-    def completo(self):
-        return not self.etapas_pendentes
-
-    def clean(self):
-        super().clean()
-        if self.pago and not self.nsu:
-            raise ValidationError({"nsu": "Informe o NSU ao marcar o link como pago."})
+        constraints = [
+            models.UniqueConstraint(
+                fields=["nsu"],
+                condition=models.Q(ativo=True) & ~models.Q(nsu=""),
+                name="link_nsu_unico",
+                violation_error_message="Já existe um link ativo com este NSU.",
+            ),
+        ]

@@ -31,17 +31,15 @@ class EstornoCartao(ModeloBase):
     solicitado_banco = models.BooleanField("Solicitado no Safra", default=False)
     conciliado = models.BooleanField("Conciliado (EJL)", default=False)
 
-    class Meta:
+class Meta:
         verbose_name = "Estorno de cartão"
         verbose_name_plural = "Estornos de cartão"
         ordering = ["-data", "-id"]
-
-    def __str__(self):
-        return f"{self.cliente} - NSU {self.nsu}"
-
-    def clean(self):
-        super().clean()
-        if self.data and self.data_venda and self.data_venda > self.data:
-            raise ValidationError(
-                {"data_venda": "A data da venda não pode ser posterior à data do estorno."}
-            )
+        constraints = [
+            models.UniqueConstraint(
+                fields=["nsu"],
+                condition=models.Q(ativo=True) & ~models.Q(nsu=""),
+                name="estorno_nsu_unico",
+                violation_error_message="Já existe um estorno ativo com este NSU.",
+            ),
+        ]

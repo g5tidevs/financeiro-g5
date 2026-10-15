@@ -8,7 +8,7 @@ from django.views.generic import CreateView, ListView, UpdateView
 from apps.contas.mixins import SupervisorRequiredMixin
 from apps.core.historico import montar_historico
 from apps.core.utils import redirecionar_de_volta
-
+from apps.core.mixins import NsuUnicoMixin
 from .forms import EstornoCartaoForm, EstornoFiltroForm
 from .models import EstornoCartao
 
@@ -40,7 +40,7 @@ class EstornoListView(ListView):
         return context
 
 
-class EstornoFormMixin:
+class EstornoFormMixin(NsuUnicoMixin):
     model = EstornoCartao
     form_class = EstornoCartaoForm
     template_name = "estornos/form.html"
