@@ -13,7 +13,12 @@ class EstornoCartao(ModeloBase):
         "cadastros.Loja", verbose_name="Loja", on_delete=models.PROTECT, related_name="estornos"
     )
     cliente = models.CharField("Cliente", max_length=150)
-    contato_cliente = models.CharField("Contato do cliente", max_length=100, help_text="Telefone ou e-mail")
+    protocolo_cancelamento = models.CharField(
+        "Protocolo do cancelamento",
+        max_length=50,
+        blank=True,
+        help_text="Número do protocolo gerado ao solicitar o cancelamento",
+    )
     data_venda = models.DateField("Data da venda")
     valor = models.DecimalField(
         "Valor",

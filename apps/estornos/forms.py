@@ -16,13 +16,14 @@ class EstornoCartaoForm(BootstrapModelForm):
     class Meta:
         model = EstornoCartao
         fields = [
-            "data", "loja", "cliente", "contato_cliente", "data_venda", "valor",
+            "data", "loja", "cliente", "protocolo_cancelamento", "data_venda", "valor",
             "nsu", "motivo", "solicitado_banco", "conciliado",
         ]
         widgets = {
             "data": CAMPO_DATA,
             "data_venda": CAMPO_DATA,
             "nsu": forms.TextInput(attrs={"inputmode": "numeric", "autocomplete": "off"}),
+            "protocolo_cancelamento": forms.TextInput(attrs={"autocomplete": "off"}),
             "motivo": forms.TextInput(attrs={"list": "motivos-sugeridos", "autocomplete": "off"}),
         }
 
@@ -54,7 +55,9 @@ class EstornoCartaoForm(BootstrapModelForm):
     def clean_motivo(self):
         motivo = " ".join(self.cleaned_data["motivo"].split())
         return motivo[:1].upper() + motivo[1:]
-
+    def clean_protocolo_cancelamento(self):
+        # Remove espaços colados por engano no começo e no fim
+        return self.cleaned_data["protocolo_cancelamento"].strip()
     def clean(self):
         dados = super().clean()
         nsu = dados.get("nsu")
@@ -84,7 +87,7 @@ class EstornoFiltroForm(BootstrapFormMixin, forms.Form):
     ejl = forms.ChoiceField(label="EJL", choices=SIM_NAO, required=False)
     q = forms.CharField(
         label="Buscar", required=False,
-        widget=forms.TextInput(attrs={"type": "search", "placeholder": "Cliente, NSU, motivo ou contato"}),
+        widget=forms.TextInput(attrs={"type": "search", "placeholder": "Cliente, NSU, motivo ou protocolo"}),
     )
 
     def clean(self):
@@ -113,6 +116,6 @@ class EstornoFiltroForm(BootstrapFormMixin, forms.Form):
                 Q(cliente__icontains=d["q"])
                 | Q(nsu__icontains=d["q"])
                 | Q(motivo__icontains=d["q"])
-                | Q(contato_cliente__icontains=d["q"])
+                | Q(protocolo_cancelamento__icontains=d["q"])
             )
         return qs
