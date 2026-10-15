@@ -1,0 +1,25 @@
+{% extends "partials/detalhe.html" %}
+
+{% block situacao %}
+<div class="detalhe-situacao">
+  {% if object.solicitado_banco %}
+    <span class="selo selo-ok">Solicitado no Safra</span>
+  {% else %}
+    <span class="selo selo-pendente">Falta solicitar no Safra</span>
+  {% endif %}
+  {% if object.conciliado %}
+    <span class="selo selo-ok">Conciliado na EJL</span>
+  {% else %}
+    <span class="selo selo-pendente">Pendente na EJL</span>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block dados %}
+<div><dt>Data do estorno</dt><dd>{{ object.data|date:"d/m/Y" }}</dd></div>
+<div><dt>Data da venda</dt><dd>{{ object.data_venda|date:"d/m/Y" }}</dd></div>
+<div><dt>Loja</dt><dd>{{ object.loja }}</dd></div>
+<div><dt>NSU</dt><dd class="nsu">{{ object.nsu }}</dd></div>
+<div><dt>Protocolo do cancelamento</dt><dd>{{ object.protocolo_cancelamento|default:"—" }}</dd></div>
+<div><dt>Motivo</dt><dd>{{ object.motivo }}</dd></div>
+{% endblock %}

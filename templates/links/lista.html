@@ -5,7 +5,7 @@
 <div class="barra-acoes">
   <div>
     <h1 class="pagina-titulo">Links de pagamento</h1>
-    <p class="pagina-sub mb-0">Clique numa etapa para marcar ou desmarcar.</p>
+    <p class="pagina-sub mb-0">Clique no cliente para ver os detalhes, ou numa etapa para marcar ou desmarcar.</p>
   </div>
   <a href="{% url 'links:novo' %}" class="btn btn-primario">Novo link</a>
 </div>
@@ -72,13 +72,13 @@
     </thead>
     <tbody>
       {% for l in page_obj %}
-      <tr>
+      <tr class="linha-detalhe">
         <td>{{ l.data|date:"d/m/Y" }}</td>
         <td>
           {{ l.vendedor.nome }}
           <span class="texto-secundario">{{ l.vendedor.loja }}</span>
         </td>
-        <td>{{ l.cliente }}</td>
+        <td><a href="{% url 'links:detalhe' l.pk %}" class="link-detalhe" data-detalhe>{{ l.cliente }}</a></td>
         <td class="num">{{ l.parcelas }}x</td>
         <td class="num">{{ l.valor|dinheiro }}</td>
         <td class="nsu">{{ l.nsu|default:"—" }}</td>

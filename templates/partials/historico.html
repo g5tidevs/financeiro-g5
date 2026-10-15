@@ -1,5 +1,5 @@
 <section class="historico" aria-labelledby="titulo-historico">
-  <h2 id="titulo-historico">Histórico de alterações</h2>
+  {% with nivel=nivel|default:2 %}<h{{ nivel }} id="titulo-historico">Histórico de alterações</h{{ nivel }}>{% endwith %}
   {% if historico %}
   <ol class="historico-lista">
     {% for item in historico %}

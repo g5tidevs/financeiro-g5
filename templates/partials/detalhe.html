@@ -1,0 +1,37 @@
+{% load core_tags %}
+{# Estrutura comum dos detalhes de um lançamento. Cada módulo estende e preenche os blocos. #}
+<article class="detalhe">
+  <header class="detalhe-topo">
+    {% if not pagina %}<p class="detalhe-modulo">{{ modulo }}</p>{% endif %}
+    <h2 class="detalhe-titulo" id="detalhe-titulo">{{ object.cliente }}</h2>
+    <p class="detalhe-valor">
+      {% if object.valor is not None %}{{ object.valor|dinheiro }}{% else %}<span class="detalhe-sem-valor">Valor não informado</span>{% endif %}
+    </p>
+    {% block situacao %}{% endblock %}
+  </header>
+
+  <section class="detalhe-secao" aria-labelledby="detalhe-dados">
+    <h3 id="detalhe-dados">Dados do lançamento</h3>
+    <dl class="detalhe-dados">
+      {% block dados %}{% endblock %}
+    </dl>
+  </section>
+
+  {% block secoes %}{% endblock %}
+
+  <section class="detalhe-secao" aria-labelledby="detalhe-registro">
+    <h3 id="detalhe-registro">Registro</h3>
+    <dl class="detalhe-dados">
+      <div><dt>Lançado por</dt><dd>{{ object.criado_por|default:"—" }}</dd></div>
+      <div><dt>Lançado em</dt><dd>{{ object.criado_em|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt>Última alteração</dt><dd>{{ object.atualizado_em|date:"d/m/Y H:i" }}</dd></div>
+    </dl>
+  </section>
+
+  {% include "partials/historico.html" with nivel=3 %}
+
+  <div class="detalhe-acoes">
+    <a href="{{ editar_url }}" class="btn btn-primario">Editar</a>
+    {% if pagina %}<a href="{{ lista_url }}" class="btn btn-secundario">Voltar para a lista</a>{% endif %}
+  </div>
+</article>

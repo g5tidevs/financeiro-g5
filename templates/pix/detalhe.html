@@ -1,0 +1,18 @@
+{% extends "partials/detalhe.html" %}
+
+{% block situacao %}
+<div class="detalhe-situacao">
+  {% if object.conciliado %}
+    <span class="selo selo-ok">Conciliado na EJL</span>
+  {% else %}
+    <span class="selo selo-pendente">Pendente na EJL</span>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block dados %}
+<div><dt>Data</dt><dd>{{ object.data|date:"d/m/Y" }}</dd></div>
+<div><dt>Loja</dt><dd>{{ object.loja }}</dd></div>
+<div><dt>Banco</dt><dd>{{ object.banco }}</dd></div>
+<div><dt>Motivo</dt><dd>{{ object.motivo }}</dd></div>
+{% endblock %}

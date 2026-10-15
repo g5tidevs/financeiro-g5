@@ -53,6 +53,8 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 /* ===== Navbar ===== */
 .app-navbar { background: var(--verde-navbar); padding: 0; }
 .app-navbar > .container-fluid { min-height: 4rem; align-items: stretch; }
+/* A barra ocupa a tela toda: a marca fica no canto esquerdo e o usuário no direito */
+.app-navbar > .app-largura { max-width: none; }
 .app-marca {
   display: flex; align-items: center; margin-right: 1.75rem; padding: 0;
   color: var(--verde-rodape); font-size: 1.3rem; font-weight: 800; font-stretch: 125%; letter-spacing: -.02em;
@@ -77,15 +79,22 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 @media (min-width: 1200px) {
   .app-navbar .navbar-collapse { align-items: stretch; }
   /* As abas encostam na borda de baixo; a ativa tem a cor da página e se funde a ela */
-  .app-navbar .navbar-nav { align-self: flex-end; gap: .125rem; }
-  .app-navbar .navbar-nav .nav-link { position: relative; padding: .7rem .85rem .8rem; border-radius: 10px 10px 0 0; }
+  .app-navbar .navbar-nav { align-self: flex-end; gap: .25rem; }
+  /* Os nomes nunca quebram linha; a fonte um pouco menor faz as abas caberem com folga */
+  .app-navbar .navbar-nav .nav-link { position: relative; padding: .7rem .55rem .8rem; border-radius: 10px 10px 0 0; font-size: .875rem; white-space: nowrap; }
   .app-navbar .navbar-nav .nav-link.active::before,
   .app-navbar .navbar-nav .nav-link.active::after { content: ""; position: absolute; bottom: 0; width: 10px; height: 10px; }
   .app-navbar .navbar-nav .nav-link.active::before { left: -10px; background: radial-gradient(circle at 0 0, transparent 10px, var(--cinza) 10.5px); }
   .app-navbar .navbar-nav .nav-link.active::after { right: -10px; background: radial-gradient(circle at 100% 0, transparent 10px, var(--cinza) 10.5px); }
   /* Marca e usuário apoiados na mesma linha das abas */
   .app-marca { align-self: flex-end; line-height: 1; padding-bottom: .9rem; }
-  .app-usuario { align-self: flex-end; padding-bottom: .45rem; }
+  .app-usuario { align-self: flex-end; padding-bottom: .45rem; margin-left: 1.5rem; }
+}
+
+/* Com a página na largura máxima, sobra espaço para separar mais as abas */
+@media (min-width: 1280px) {
+  .app-navbar .navbar-nav { gap: .75rem; }
+  .app-navbar .navbar-nav .nav-link { padding-left: .7rem; padding-right: .7rem; }
 }
 
 @media (max-width: 1199.98px) {
@@ -150,8 +159,9 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .inicio-saudacao { font-size: clamp(2.25rem, 4.5vw, 3rem); font-weight: 800; font-stretch: 125%; letter-spacing: -.035em; line-height: 1.05; margin: 0 0 .6rem; }
 .inicio-data { color: var(--tinta-suave); font-size: 1.0625rem; margin: 0; }
 
+/* Grade 2 × 2: quatro controles, duas colunas */
 .quadro {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   background: var(--papel); border: 1px solid var(--linha); border-radius: var(--raio-painel); overflow: hidden;
 }
 /* Cada item desenha a divisória à esquerda e acima; as das bordas são cortadas pelo overflow */
@@ -391,6 +401,55 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .historico del { color: #8a5a55; }
 .historico ins { text-decoration: none; font-weight: 600; color: var(--verde-rodape); }
 .historico-vazio { color: var(--tinta-suave); }
+
+/* ===== Detalhes de um lançamento (painel lateral e página) ===== */
+.tabela tr.linha-detalhe { cursor: pointer; }
+.tabela tr.selecionada > td, .tabela tr.selecionada:hover > td { background-color: var(--realce); }
+.link-detalhe { font-weight: 600; color: inherit; text-decoration: none; }
+.link-detalhe:hover { color: var(--verde-rodape); text-decoration: underline; }
+
+.painel-detalhe { --bs-offcanvas-width: min(460px, 100vw); --bs-offcanvas-bg: var(--cinza); --bs-offcanvas-border-color: var(--linha); }
+/* O painel recebe o foco ao abrir só para o leitor de tela anunciá-lo; um contorno em volta dele todo não ajuda ninguém */
+.painel-detalhe:focus-visible { outline: none; }
+.painel-detalhe-fechar { position: absolute; top: 1.15rem; right: 1.15rem; z-index: 2; }
+.painel-detalhe .offcanvas-body { padding: 1.4rem 1.5rem 0; }
+.painel-aviso { padding-top: 2.5rem; color: var(--tinta-suave); }
+
+.detalhe-topo { margin-bottom: 1.25rem; padding-right: 2.5rem; }
+.detalhe-modulo { margin: 0 0 .3rem; font-size: .8125rem; font-weight: 600; color: var(--tinta-suave); }
+.detalhe-titulo { margin: 0; font-size: 1.375rem; font-weight: 750; font-stretch: 112.5%; letter-spacing: -.015em; line-height: 1.2; overflow-wrap: anywhere; }
+.detalhe-valor { margin: .4rem 0 0; font-size: 1.75rem; font-weight: 750; font-stretch: 125%; letter-spacing: -.025em; line-height: 1.15; }
+.detalhe-valor .moeda { position: relative; top: -.55em; font-size: .5em; font-weight: 600; font-stretch: 100%; letter-spacing: 0; }
+.detalhe-sem-valor { font-size: 1rem; font-weight: 500; font-stretch: 100%; letter-spacing: 0; color: var(--tinta-suave); }
+.detalhe-situacao { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+
+.detalhe-secao, .detalhe .historico {
+  margin: 0 0 1rem; padding: .9rem 1.1rem .4rem;
+  background: var(--papel); border: 1px solid var(--linha); border-radius: var(--raio-painel);
+}
+.detalhe-secao h3, .detalhe .historico h3 { margin: 0 0 .35rem; font-size: .8125rem; font-weight: 600; color: var(--tinta-suave); }
+.detalhe-dados { margin: 0; font-size: .9rem; }
+.detalhe-dados > div { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .5rem 0; border-top: 1px solid var(--linha); }
+.detalhe-dados > div:first-child { border-top: 0; }
+.detalhe-dados dt { flex: none; font-weight: 400; color: var(--tinta-suave); }
+.detalhe-dados dd { margin: 0; font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+
+.detalhe .historico { max-width: none; padding-bottom: .9rem; }
+.detalhe .historico h3 { margin-bottom: .85rem; }
+.detalhe .historico-lista > li:last-child { padding-bottom: 0; }
+.detalhe .historico-lista > li::before { border-color: var(--papel); }
+.detalhe .historico-mudancas { background: var(--cinza); }
+
+/* Ações presas ao pé do painel, sempre à vista */
+.detalhe-acoes {
+  position: sticky; bottom: 0; display: flex; flex-wrap: wrap; gap: .5rem;
+  margin: 0 -1.5rem; padding: .9rem 1.5rem 1.1rem; background: var(--cinza); border-top: 1px solid var(--linha);
+}
+
+/* Aberto direto, como página inteira */
+.detalhe-pagina { max-width: 640px; }
+.detalhe-pagina .detalhe-topo { padding-right: 0; }
+.detalhe-pagina .detalhe-acoes { position: static; margin: 1.5rem 0 0; padding: 0; background: none; border: 0; }
 
 /* ===== Dashboard: quadros por módulo ===== */
 .cards-modulos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1rem; }

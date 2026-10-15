@@ -5,7 +5,7 @@
 <div class="barra-acoes">
   <div>
     <h1 class="pagina-titulo">Devolução de Pix</h1>
-    <p class="pagina-sub mb-0">Devoluções lançadas, da mais recente para a mais antiga.</p>
+    <p class="pagina-sub mb-0">Devoluções lançadas, da mais recente para a mais antiga. Clique no cliente para ver os detalhes.</p>
   </div>
   <a href="{% url 'pix:novo' %}" class="btn btn-primario">Nova devolução</a>
 </div>
@@ -60,10 +60,10 @@
     </thead>
     <tbody>
       {% for d in page_obj %}
-      <tr>
+      <tr class="linha-detalhe">
         <td>{{ d.data|date:"d/m/Y" }}</td>
         <td>{{ d.loja }}</td>
-        <td>{{ d.cliente }}</td>
+        <td><a href="{% url 'pix:detalhe' d.pk %}" class="link-detalhe" data-detalhe>{{ d.cliente }}</a></td>
         <td class="num">{{ d.valor|dinheiro }}</td>
         <td>{{ d.banco.nome }}</td>
         <td>{{ d.motivo }}</td>

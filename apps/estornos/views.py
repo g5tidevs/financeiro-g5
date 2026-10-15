@@ -3,12 +3,12 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from apps.contas.mixins import SupervisorRequiredMixin
 from apps.core.historico import montar_historico
 from apps.core.utils import redirecionar_de_volta
-from apps.core.mixins import NsuUnicoMixin
+from apps.core.mixins import DetalheMixin, NsuUnicoMixin
 from .forms import EstornoCartaoForm, EstornoFiltroForm
 from .models import EstornoCartao
 
@@ -38,6 +38,11 @@ class EstornoListView(ListView):
         context["filtros_url"] = params.urlencode()
         context["tem_filtro"] = any(valor for valor in params.values())
         return context
+
+
+class EstornoDetalheView(DetalheMixin, DetailView):
+    template_name = "estornos/detalhe.html"
+    queryset = EstornoCartao.objects.ativos().select_related("loja", "criado_por")
 
 
 class EstornoFormMixin(NsuUnicoMixin):

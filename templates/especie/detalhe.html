@@ -1,0 +1,7 @@
+{% extends "partials/detalhe.html" %}
+
+{% block dados %}
+<div><dt>Data</dt><dd>{{ object.data|date:"d/m/Y" }}</dd></div>
+<div><dt>Loja</dt><dd>{{ object.loja }}</dd></div>
+<div><dt>Motivo</dt><dd>{{ object.motivo }}</dd></div>
+{% endblock %}

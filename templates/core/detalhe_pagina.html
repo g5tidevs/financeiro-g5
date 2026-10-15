@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{# Os detalhes abertos direto (Ctrl+clique ou nova aba). Pela lista, o mesmo conteúdo aparece no painel lateral. #}
+{% block title %}{{ object.cliente }} · {{ modulo }}{% endblock %}
+{% block content %}
+<a href="{{ lista_url }}" class="voltar">Voltar para a lista</a>
+<h1 class="pagina-titulo">{{ modulo }}</h1>
+<div class="detalhe-pagina">
+  {% include fragmento %}
+</div>
+{% endblock %}

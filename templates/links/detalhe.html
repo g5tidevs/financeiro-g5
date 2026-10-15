@@ -1,0 +1,34 @@
+{% extends "partials/detalhe.html" %}
+{% load core_tags %}
+
+{% block situacao %}
+<div class="detalhe-situacao">
+  {% if object.completo %}
+    <span class="selo selo-ok">Completo</span>
+  {% else %}
+    <span class="selo selo-pendente">Falta: {{ object.etapas_pendentes|join:", " }}</span>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block dados %}
+<div><dt>Data</dt><dd>{{ object.data|date:"d/m/Y" }}</dd></div>
+<div><dt>Vendedor</dt><dd>{{ object.vendedor.nome }}</dd></div>
+<div><dt>Loja</dt><dd>{{ object.vendedor.loja }}</dd></div>
+<div><dt>Parcelamento</dt><dd>{{ object.parcelas }}x</dd></div>
+<div><dt>NSU</dt><dd class="nsu">{{ object.nsu|default:"—" }}</dd></div>
+{% endblock %}
+
+{% block secoes %}
+<section class="detalhe-secao" aria-labelledby="detalhe-etapas">
+  <h3 id="detalhe-etapas">Etapas</h3>
+  <dl class="detalhe-dados">
+    {% for campo, rotulo in object.ETAPAS %}
+    <div>
+      <dt>{{ rotulo }}</dt>
+      <dd>{% if object|atributo:campo %}<span class="selo selo-ok">Feito</span>{% else %}<span class="selo selo-pendente">Pendente</span>{% endif %}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+</section>
+{% endblock %}

@@ -39,6 +39,10 @@
                {% if app == 'pix' %}aria-current="page"{% endif %}>Devolução de Pix</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link {% if app == 'especie' %}active{% endif %}" href="{% url 'especie:lista' %}"
+               {% if app == 'especie' %}aria-current="page"{% endif %}>Devolução em espécie</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link {% if app == 'estornos' %}active{% endif %}" href="{% url 'estornos:lista' %}"
                {% if app == 'estornos' %}aria-current="page"{% endif %}>Estorno de cartão</a>
           </li>
@@ -80,8 +84,15 @@
     <div class="app-largura">Sistema financeiro de uso interno</div>
   </footer>
 </div>
+
+{# Painel lateral com os detalhes de um lançamento; o conteúdo chega via static/js/painel-detalhe.js #}
+<div class="offcanvas offcanvas-end painel-detalhe" tabindex="-1" id="painel-detalhe" aria-labelledby="detalhe-titulo">
+  <button type="button" class="btn-close painel-detalhe-fechar" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  <div class="offcanvas-body painel-detalhe-corpo"></div>
+</div>
 {% endblock %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/painel-detalhe.js' %}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

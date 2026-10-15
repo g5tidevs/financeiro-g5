@@ -5,7 +5,7 @@
 <div class="barra-acoes">
   <div>
     <h1 class="pagina-titulo">Estorno de cartão</h1>
-    <p class="pagina-sub mb-0">Clique na situação das colunas Safra e EJL para alterá-la.</p>
+    <p class="pagina-sub mb-0">Clique no cliente para ver os detalhes, ou na situação das colunas Safra e EJL para alterá-la.</p>
   </div>
   <a href="{% url 'estornos:novo' %}" class="btn btn-primario">Novo estorno</a>
 </div>
@@ -66,11 +66,11 @@
     </thead>
     <tbody>
       {% for e in page_obj %}
-      <tr>
+      <tr class="linha-detalhe">
         <td>{{ e.data|date:"d/m/Y" }}</td>
         <td>{{ e.loja }}</td>
         <td>
-          {{ e.cliente }}
+          <a href="{% url 'estornos:detalhe' e.pk %}" class="link-detalhe" data-detalhe>{{ e.cliente }}</a>
           <span class="texto-secundario">{{ e.motivo }}</span>
         </td>
         <td>{{ e.data_venda|date:"d/m/Y" }}</td>

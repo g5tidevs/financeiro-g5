@@ -6,6 +6,7 @@ app_name = "estornos"
 
 urlpatterns = [
     path("", views.EstornoListView.as_view(), name="lista"),
+    path("<int:pk>/", views.EstornoDetalheView.as_view(), name="detalhe"),
     path("novo/", views.EstornoCreateView.as_view(), name="novo"),
     path("<int:pk>/editar/", views.EstornoUpdateView.as_view(), name="editar"),
     path("<int:pk>/safra/", views.EstornoAlternarView.as_view(campo="solicitado_banco"), name="safra"),

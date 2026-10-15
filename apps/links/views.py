@@ -4,12 +4,12 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from apps.contas.mixins import SupervisorRequiredMixin
 from apps.core.historico import montar_historico
 from apps.core.utils import redirecionar_de_volta
-from apps.core.mixins import NsuUnicoMixin
+from apps.core.mixins import DetalheMixin, NsuUnicoMixin
 from .forms import LinkFiltroForm, LinkPagamentoForm
 from .models import LinkPagamento
 
@@ -57,6 +57,11 @@ class LinkListView(ListView):
         context["filtros_url"] = params.urlencode()
         context["tem_filtro"] = any(valor for valor in params.values())
         return context
+
+
+class LinkDetalheView(DetalheMixin, DetailView):
+    template_name = "links/detalhe.html"
+    queryset = LinkPagamento.objects.ativos().select_related("vendedor__loja", "criado_por")
 
 
 class LinkFormMixin(NsuUnicoMixin):
