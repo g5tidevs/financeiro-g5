@@ -39,6 +39,13 @@
     <a href="{{ listas.pix }}" class="card-link">Ver pendentes</a>
   </section>
 
+  <section class="card-modulo">
+    <h2>Devolução em espécie</h2>
+    <p class="card-numero">{{ resumo.especie.total|default:0|dinheiro }}</p>
+    <p class="card-detalhe">{{ resumo.especie.quantidade }} devoluç{{ resumo.especie.quantidade|pluralize:"ão,ões" }}</p>
+    <a href="{{ listas.especie }}" class="card-link">Ver devoluções</a>
+  </section>
+
   <section class="card-modulo{% if resumo.estornos.sem_safra or resumo.estornos.pendente_ejl %} com-pendencia{% endif %}">
     <h2>Estorno de cartão</h2>
     <p class="card-numero">{{ resumo.estornos.total|default:0|dinheiro }}</p>
@@ -69,10 +76,10 @@
 {# ===== Gráficos dos últimos 12 meses ===== #}
 <div class="graficos">
   <section class="painel">
-    <h2>Pix e estornos por mês</h2>
+    <h2>Devoluções e estornos por mês</h2>
     <p class="painel-sub">Valores dos últimos 12 meses</p>
     <div class="grafico">
-      <canvas id="grafico-valores" role="img" aria-label="Gráfico de barras com os valores mensais de devoluções de Pix e estornos de cartão"></canvas>
+      <canvas id="grafico-valores" role="img" aria-label="Gráfico de barras com os valores mensais de devoluções de Pix, devoluções em espécie e estornos de cartão"></canvas>
     </div>
   </section>
   <section class="painel">
@@ -95,6 +102,7 @@
         <tr>
           <th>Loja</th>
           <th class="num">Pix</th>
+          <th class="num">Espécie</th>
           <th class="num">Estornos</th>
           <th class="num">Links</th>
           <th class="num">Pendências</th>
@@ -105,6 +113,7 @@
         <tr>
           <td>{{ l.nome }}</td>
           <td class="num">{{ l.pix|dinheiro }}</td>
+          <td class="num">{{ l.especie|dinheiro }}</td>
           <td class="num">{{ l.estornos|dinheiro }}</td>
           <td class="num">{{ l.links }}</td>
           <td class="num">
@@ -112,7 +121,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" class="vazio">Nenhum lançamento no período.</td></tr>
+        <tr><td colspan="6" class="vazio">Nenhum lançamento no período.</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -216,6 +225,7 @@
       labels: dados.rotulos,
       datasets: [
         { label: "Devolução de Pix", data: dados.pix, backgroundColor: "#045c3c", borderRadius: 3, maxBarThickness: 22 },
+        { label: "Devolução em espécie", data: dados.especie, backgroundColor: "#748a7f", borderRadius: 3, maxBarThickness: 22 },
         { label: "Estorno de cartão", data: dados.estornos, backgroundColor: "#5a8c03", borderRadius: 3, maxBarThickness: 22 },
       ],
     },

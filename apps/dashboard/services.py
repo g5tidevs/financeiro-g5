@@ -7,6 +7,7 @@ from django.db.models.functions import TruncMonth
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.especie.models import DevolucaoEspecie
 from apps.estornos.models import EstornoCartao
 from apps.links.models import LinkPagamento
 from apps.pix.models import DevolucaoPix
@@ -16,25 +17,31 @@ MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "
 
 
 def _bases(loja=None):
-    """Os três conjuntos de dados, já sem os excluídos e filtrados pela loja (se houver)."""
+    """Os quatro conjuntos de dados, já sem os excluídos e filtrados pela loja (se houver)."""
     pix = DevolucaoPix.objects.ativos()
+    especie = DevolucaoEspecie.objects.ativos()
     estornos = EstornoCartao.objects.ativos()
     links = LinkPagamento.objects.ativos()
     if loja:
         pix = pix.filter(loja=loja)
+        especie = especie.filter(loja=loja)
         estornos = estornos.filter(loja=loja)
         links = links.filter(vendedor__loja=loja)
-    return pix, estornos, links
+    return pix, especie, estornos, links
 
 
 def resumo_periodo(inicio, fim, loja=None):
-    pix, estornos, links = _bases(loja)
+    pix, especie, estornos, links = _bases(loja)
     periodo = {"data__gte": inicio, "data__lte": fim}
 
     r_pix = pix.filter(**periodo).aggregate(
         quantidade=Count("id"),
         total=Sum("valor"),
         pendente_ejl=Sum("valor", filter=Q(conciliado=False)),
+    )
+    r_especie = especie.filter(**periodo).aggregate(
+        quantidade=Count("id"),
+        total=Sum("valor"),
     )
     r_estornos = estornos.filter(**periodo).aggregate(
         quantidade=Count("id"),
@@ -51,7 +58,7 @@ def resumo_periodo(inicio, fim, loja=None):
     r_links["percentual"] = (
         round(100 * r_links["completos"] / r_links["quantidade"]) if r_links["quantidade"] else 0
     )
-    return {"pix": r_pix, "estornos": r_estornos, "links": r_links}
+    return {"pix": r_pix, "especie": r_especie, "estornos": r_estornos, "links": r_links}
 
 
 def _meses_ate(fim, quantidade):
@@ -67,7 +74,7 @@ def _meses_ate(fim, quantidade):
 
 
 def evolucao_mensal(fim, loja=None, quantidade=12):
-    pix, estornos, links = _bases(loja)
+    pix, especie, estornos, links = _bases(loja)
     meses = _meses_ate(fim, quantidade)
     desde = meses[0]
 
@@ -81,6 +88,7 @@ def evolucao_mensal(fim, loja=None, quantidade=12):
         return {linha["mes"]: linha for linha in linhas}
 
     m_pix = por_mes(pix, total=Sum("valor"))
+    m_especie = por_mes(especie, total=Sum("valor"))
     m_estornos = por_mes(estornos, total=Sum("valor"))
     m_links = por_mes(links, completos=Count("id", filter=LINK_COMPLETO), quantidade=Count("id"))
 
@@ -90,6 +98,7 @@ def evolucao_mensal(fim, loja=None, quantidade=12):
     return {
         "rotulos": [f"{MESES[m.month - 1]}/{m:%y}" for m in meses],
         "pix": [total(m_pix, m) for m in meses],
+        "especie": [total(m_especie, m) for m in meses],
         "estornos": [total(m_estornos, m) for m in meses],
         "links_completos": [m_links.get(m, {}).get("completos", 0) for m in meses],
         "links_pendentes": [
@@ -100,13 +109,13 @@ def evolucao_mensal(fim, loja=None, quantidade=12):
 
 def por_loja(inicio, fim):
     """Uma linha por loja com os totais do período, ordenada pelo maior volume de pendências."""
-    pix, estornos, links = _bases()
+    pix, especie, estornos, links = _bases()
     periodo = {"data__gte": inicio, "data__lte": fim}
     lojas = {}
 
     def linha(loja_id, nome):
         return lojas.setdefault(loja_id, {
-            "nome": nome, "pix": 0, "estornos": 0, "links": 0,
+            "nome": nome, "pix": 0, "especie": 0, "estornos": 0, "links": 0,
             "pix_pendentes": 0, "estornos_pendentes": 0, "links_pendentes": 0,
         })
 
@@ -115,6 +124,11 @@ def por_loja(inicio, fim):
     ):
         item = linha(r["loja"], r["loja__nome"])
         item["pix"], item["pix_pendentes"] = r["total"], r["pendentes"]
+
+    # Espécie não tem etapa a cumprir: entra só com o valor, sem pendências
+    for r in especie.filter(**periodo).values("loja", "loja__nome").annotate(total=Sum("valor")):
+        item = linha(r["loja"], r["loja__nome"])
+        item["especie"] = r["total"]
 
     for r in estornos.filter(**periodo).values("loja", "loja__nome").annotate(
         total=Sum("valor"),
@@ -135,7 +149,7 @@ def por_loja(inicio, fim):
 
 
 def pendencias_por_vendedor(inicio, fim, loja=None, limite=10):
-    _, _, links = _bases(loja)
+    _, _, _, links = _bases(loja)
     linhas = (
         links.filter(data__gte=inicio, data__lte=fim)
         .exclude(LINK_COMPLETO)
@@ -154,7 +168,7 @@ def pendencias_por_vendedor(inicio, fim, loja=None, limite=10):
 
 def parados(dias, loja=None, limite=15):
     """Itens com pendência há mais de N dias, de qualquer período. Os mais antigos primeiro."""
-    pix, estornos, links = _bases(loja)
+    pix, _, estornos, links = _bases(loja)
     hoje = timezone.localdate()
     limite_data = hoje - timedelta(days=dias)
 

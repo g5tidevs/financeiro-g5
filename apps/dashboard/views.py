@@ -72,6 +72,7 @@ class DashboardView(SupervisorRequiredMixin, TemplateView):
             base["loja"] = loja.pk
         return {
             "pix": reverse("pix:lista") + "?" + urlencode({**base, "situacao": "pendente"}),
+            "especie": reverse("especie:lista") + "?" + urlencode(base),
             "estornos": reverse("estornos:lista") + "?" + urlencode(base),
             "links": reverse("links:lista") + "?" + urlencode({**base, "situacao": "pendente"}),
         }
