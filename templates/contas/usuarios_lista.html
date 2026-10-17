@@ -58,7 +58,8 @@
           <a href="{% url 'contas:usuario_senha' u.pk %}">Senha</a>
           {% if u != user %}
           <form method="post" action="{% url 'contas:usuario_alternar' u.pk %}"
-                {% if u.is_active %}onsubmit="return confirm('Desativar {{ u|escapejs }}? A pessoa não vai conseguir mais entrar.');"{% endif %}>
+                {% if u.is_active %}data-confirmar="Desativar {{ u }}?" data-confirmar-texto="A pessoa não vai conseguir mais entrar."
+                data-confirmar-botao="Desativar" data-confirmar-perigo{% endif %}>
             {% csrf_token %}
             <input type="hidden" name="status" value="{{ status }}">
             <button type="submit" class="btn btn-link p-0">{% if u.is_active %}Desativar{% else %}Reativar{% endif %}</button>

@@ -44,7 +44,8 @@
 
 {% if object and user.is_supervisor %}
 <form method="post" action="{% url 'links:excluir' object.pk %}" class="zona-perigo"
-      onsubmit="return confirm('Excluir este link? Ele some das listas e dos totais.');">
+      data-confirmar="Excluir este link?" data-confirmar-texto="Ele some das listas e dos totais."
+      data-confirmar-botao="Excluir" data-confirmar-perigo>
   {% csrf_token %}
   <div>
     <strong>Excluir link</strong>

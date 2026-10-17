@@ -43,7 +43,10 @@
         </td>
         <td class="text-end acoes">
           <a href="{% url 'cadastros:editar' entidade obj.pk %}">Editar</a>
-          <form method="post" action="{% url 'cadastros:alternar' entidade obj.pk %}">
+          <form method="post" action="{% url 'cadastros:alternar' entidade obj.pk %}"
+                {% if obj.ativo %}data-confirmar="Desativar {{ obj }}?"
+                data-confirmar-texto="Deixa de aparecer nos formulários. Os lançamentos antigos continuam intactos e dá para reativar quando quiser."
+                data-confirmar-botao="Desativar" data-confirmar-perigo{% endif %}>
             {% csrf_token %}
             <input type="hidden" name="status" value="{{ status }}">
             <button type="submit" class="btn btn-link p-0">{% if obj.ativo %}Desativar{% else %}Reativar{% endif %}</button>
