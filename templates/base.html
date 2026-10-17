@@ -57,6 +57,12 @@
                {% if app == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>
           </li>
          {% endif %}
+        {% if user.is_superuser %}
+          <li class="nav-item">
+            <a class="nav-link {% if app == 'contas' %}active{% endif %}" href="{% url 'contas:usuarios' %}"
+               {% if app == 'contas' %}aria-current="page"{% endif %}>Usuários</a>
+          </li>
+        {% endif %}
          {% endwith %}
         </ul>
 

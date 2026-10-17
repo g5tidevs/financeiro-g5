@@ -46,6 +46,12 @@
     <strong>Dashboard</strong>
     <span>Totais do período, pendências por loja e por vendedor, e itens parados.</span>
   </a>
+  {% if user.is_superuser %}
+  <a href="{% url 'contas:usuarios' %}">
+    <strong>Usuários</strong>
+    <span>Quem pode entrar no sistema, papéis, senhas e acessos.</span>
+  </a>
+  {% endif %}  
 </div>
 {% else %}
 <h2 class="inicio-secao">Cadastros</h2>

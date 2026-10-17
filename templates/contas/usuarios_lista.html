@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Usuários{% endblock %}
+{% block content %}
+<div class="barra-acoes">
+  <div>
+    <h1 class="pagina-titulo">Usuários</h1>
+    <p class="pagina-sub mb-0">Quem pode entrar no sistema e o que cada pessoa enxerga.</p>
+  </div>
+  <a href="{% url 'contas:usuario_novo' %}" class="btn btn-primario">Novo usuário</a>
+</div>
+
+<form method="get" class="painel-filtros" aria-label="Filtros">
+  <div class="filtros-grid">
+    <div>
+      <label class="form-label" for="busca">Buscar</label>
+      <input type="search" id="busca" name="q" value="{{ q }}" class="form-control" placeholder="Nome, usuário ou e-mail">
+    </div>
+    <div>
+      <label class="form-label" for="situacao">Situação</label>
+      <select id="situacao" name="status" class="form-select">
+        <option value="ativos" {% if status == "ativos" %}selected{% endif %}>Ativos</option>
+        <option value="inativos" {% if status == "inativos" %}selected{% endif %}>Inativos</option>
+        <option value="todos" {% if status == "todos" %}selected{% endif %}>Todos</option>
+      </select>
+    </div>
+  </div>
+  <div class="filtros-acoes">
+    <button type="submit" class="btn btn-primario">Filtrar</button>
+  </div>
+</form>
+
+<div class="tabela-container">
+  <table class="table tabela">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Usuário</th>
+        <th>Papel</th>
+        <th>Loja</th>
+        <th>Último acesso</th>
+        <th>Situação</th>
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in page_obj %}
+      <tr class="{% if not u.is_active %}inativo{% endif %}">
+        <td>{{ u.get_full_name|default:"—" }}<span class="texto-secundario">{{ u.email }}</span></td>
+        <td>{{ u.username }}</td>
+        <td>{% if u.is_superuser %}Administrador{% else %}{{ u.get_papel_display }}{% endif %}</td>
+        <td>{{ u.loja|default:"—" }}</td>
+        <td>{% if u.last_login %}{{ u.last_login|date:"d/m/Y H:i" }}{% else %}Nunca entrou{% endif %}</td>
+        <td>
+          {% if u.is_active %}<span class="selo selo-ok">Ativo</span>{% else %}<span class="selo selo-off">Inativo</span>{% endif %}
+        </td>
+        <td class="text-end acoes">
+          <a href="{% url 'contas:usuario_editar' u.pk %}">Editar</a>
+          <a href="{% url 'contas:usuario_senha' u.pk %}">Senha</a>
+          {% if u != user %}
+          <form method="post" action="{% url 'contas:usuario_alternar' u.pk %}"
+                {% if u.is_active %}onsubmit="return confirm('Desativar {{ u|escapejs }}? A pessoa não vai conseguir mais entrar.');"{% endif %}>
+            {% csrf_token %}
+            <input type="hidden" name="status" value="{{ status }}">
+            <button type="submit" class="btn btn-link p-0">{% if u.is_active %}Desativar{% else %}Reativar{% endif %}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="vazio">
+          {% if q %}Nenhum usuário encontrado para “{{ q }}”.{% else %}Nenhum usuário nesta situação.{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="paginacao" aria-label="Paginação">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}&status={{ status }}">Anterior</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}&status={{ status }}">Próxima</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

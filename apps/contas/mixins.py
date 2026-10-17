@@ -29,3 +29,11 @@ class ComumRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         user = self.request.user
         return user.is_authenticated and not user.is_supervisor
+
+
+class AdminRequiredMixin(UserPassesTestMixin):
+    """Para class-based views: só o administrador (superusuário) acessa. Os demais recebem 403."""
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and user.is_superuser        

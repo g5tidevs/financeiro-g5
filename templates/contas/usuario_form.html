@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Editar usuário{% else %}Novo usuário{% endif %} · Usuários{% endblock %}
+{% block content %}
+<a href="{% url 'contas:usuarios' %}" class="voltar">Voltar para usuários</a>
+<h1 class="pagina-titulo">{% if object %}Editar {{ object }}{% else %}Novo usuário{% endif %}</h1>
+<p class="pagina-sub">
+  O <strong>papel</strong> define o que a pessoa enxerga: o usuário comum lança e consulta os controles e cuida dos cadastros;
+  o supervisor lança e consulta os controles e acompanha o dashboard.
+</p>
+
+<form method="post" class="formulario formulario-largo" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+
+  <div class="form-grid">
+    {% include "partials/campo.html" with field=form.first_name %}
+    {% include "partials/campo.html" with field=form.last_name %}
+    {% include "partials/campo.html" with field=form.username %}
+    {% include "partials/campo.html" with field=form.email %}
+    {% include "partials/campo.html" with field=form.papel %}
+    {% include "partials/campo.html" with field=form.loja %}
+    {% if form.password1 %}
+      {% include "partials/campo.html" with field=form.password1 %}
+      {% include "partials/campo.html" with field=form.password2 %}
+    {% endif %}
+  </div>
+
+  <div class="formulario-acoes">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{% url 'contas:usuarios' %}" class="btn btn-secundario">Cancelar</a>
+    {% if object %}
+      <a href="{% url 'contas:usuario_senha' object.pk %}" class="btn btn-secundario">Alterar senha</a>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

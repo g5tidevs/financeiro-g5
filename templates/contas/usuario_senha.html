@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Alterar senha · Usuários{% endblock %}
+{% block content %}
+<a href="{% url 'contas:usuarios' %}" class="voltar">Voltar para usuários</a>
+<h1 class="pagina-titulo">Alterar senha de {{ usuario }}</h1>
+<p class="pagina-sub">Defina uma nova senha e passe para a pessoa. A senha antiga deixa de funcionar na hora.</p>
+
+<form method="post" class="formulario" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+
+  {% include "partials/campo.html" with field=form.new_password1 %}
+  {% include "partials/campo.html" with field=form.new_password2 %}
+
+  <div class="formulario-acoes">
+    <button type="submit" class="btn btn-primario">Salvar nova senha</button>
+    <a href="{% url 'contas:usuarios' %}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+{% endblock %}
