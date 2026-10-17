@@ -1,42 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Entrar · Financeiro{% endblock %}
+{% block title %}Entrar · G5 Financeiro{% endblock %}
 {% block body %}
-<main class="login">
-  <section class="login-marca">
-    <p class="login-aviso">Sistema de uso interno</p>
-    <div>
-      <h1 class="login-marca-nome">Financeiro</h1>
-      <ul class="login-modulos" aria-label="Controles do sistema">
-        <li>Links de pagamento</li>
-        <li>Devolução de Pix</li>
-        <li>Estorno de cartão</li>
-      </ul>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
+
+<main class="login-pagina">
+  <div class="login-container">
+
+    {# ===== Cabeçalho ===== #}
+    <div class="brand">
+      <div class="logo-icon" aria-hidden="true">
+        <i class="fas fa-wallet"></i>
+      </div>
+      <h1>G5 <span>Financeiro</span></h1>
+      <p>Links, devoluções e estornos</p>
+      <div class="divider" aria-hidden="true"></div>
     </div>
-  </section>
 
-  <div class="login-form">
-    <div class="login-painel">
-      <h2 class="login-titulo">Entrar</h2>
-      <p class="login-sub">Entre com o usuário e a senha fornecidos pelo seu supervisor.</p>
+    {# ===== Mensagens do Django ===== #}
+    {% for message in messages %}
+      <div class="form-errors" role="alert">
+        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+        <span>{{ message }}</span>
+      </div>
+    {% endfor %}
 
-      {% if form.non_field_errors %}
-        <div class="alert alert-danger">Usuário ou senha incorretos. Confira os dados e tente de novo.</div>
-      {% endif %}
+    {# ===== Erro de login ===== #}
+    {% if form.non_field_errors %}
+      <div class="form-errors" role="alert">
+        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+        <span>Usuário ou senha incorretos. Confira os dados e tente de novo.</span>
+      </div>
+    {% endif %}
 
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
-        <div class="mb-3">
-          <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
-          {{ form.username }}
+    {# ===== Formulário ===== #}
+    <form class="login-form" method="post" action="{% url 'contas:login' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <div class="form-group">
+        <label for="id_username">Usuário <span class="required" aria-hidden="true">*</span></label>
+        <div class="input-wrapper">
+          <span class="icon-left" aria-hidden="true"><i class="fas fa-user"></i></span>
+          <input type="text" name="username" id="id_username" maxlength="150"
+                 value="{{ form.username.value|default:'' }}"
+                 placeholder="Digite seu usuário"
+                 autocomplete="username" autocapitalize="none" required autofocus>
         </div>
-        <div class="mb-4">
-          <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
-          {{ form.password }}
+      </div>
+
+      <div class="form-group">
+        <label for="id_password">Senha <span class="required" aria-hidden="true">*</span></label>
+        <div class="input-wrapper">
+          <span class="icon-left" aria-hidden="true"><i class="fas fa-lock"></i></span>
+          <input type="password" name="password" id="id_password"
+                 placeholder="Digite sua senha"
+                 autocomplete="current-password" required>
         </div>
-        <button type="submit" class="btn btn-primario w-100">Entrar</button>
-      </form>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="fas fa-right-to-bracket" aria-hidden="true"></i>
+        Entrar no sistema
+      </button>
+    </form>
+
+    {# ===== Rodapé ===== #}
+    <div class="login-footer">
+      <span class="seguro"><i class="fas fa-shield-halved" aria-hidden="true"></i>Ambiente seguro</span>
+      <span><i class="fas fa-lock" aria-hidden="true"></i>Acesso restrito</span>
     </div>
+
+    <p class="login-copyright">&copy; {% now "Y" %} G5 Serviços · Todos os direitos reservados</p>
+
   </div>
 </main>
 {% endblock %}
