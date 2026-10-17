@@ -76,6 +76,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 AUTH_USER_MODEL = "contas.Usuario"
+AUTHENTICATION_BACKENDS = ["apps.contas.backends.LoginSemMaiusculasBackend"]
 
 LOGIN_URL = "contas:login"
 LOGIN_REDIRECT_URL = "core:home"

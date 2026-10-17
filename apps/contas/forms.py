@@ -52,6 +52,13 @@ class UsuarioEditarForm(BootstrapModelForm):
         self.fields["first_name"].required = True
         self.fields["loja"].queryset = Loja.objects.filter(Q(ativo=True) | Q(pk=self.instance.loja_id))
 
+    def clean_username(self):
+        # O login não diferencia maiúsculas, então "Marcos" e "marcos" seriam a mesma pessoa
+        username = self.cleaned_data["username"]
+        if Usuario.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise self.instance.unique_error_message(Usuario, ["username"])
+        return username
+
 
 class UsuarioSenhaForm(BootstrapFormMixin, SetPasswordForm):
     def __init__(self, *args, **kwargs):
