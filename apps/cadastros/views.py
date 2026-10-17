@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView
 
-from apps.contas.mixins import SupervisorRequiredMixin
 
 from .forms import BancoForm, LojaForm, VendedorForm
 from .models import Banco, Loja, Vendedor
@@ -42,7 +41,7 @@ CADASTROS = {
 }
 
 
-class CadastroMixin(SupervisorRequiredMixin):
+class CadastroMixin:
     """Descobre pela URL qual cadastro está sendo usado."""
 
     def dispatch(self, request, *args, **kwargs):

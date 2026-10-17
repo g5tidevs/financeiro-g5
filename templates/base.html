@@ -46,11 +46,11 @@
             <a class="nav-link {% if app == 'estornos' %}active{% endif %}" href="{% url 'estornos:lista' %}"
                {% if app == 'estornos' %}aria-current="page"{% endif %}>Estorno de cartão</a>
           </li>
-          {% if user.is_supervisor %}
           <li class="nav-item">
             <a class="nav-link {% if app == 'cadastros' %}active{% endif %}" href="{% url 'cadastros:lista' 'lojas' %}"
                {% if app == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>
           </li>
+          {% if user.is_supervisor %}
           <li class="nav-item">
             <a class="nav-link {% if app == 'dashboard' %}active{% endif %}" href="{% url 'dashboard:painel' %}"
                {% if app == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>

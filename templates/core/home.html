@@ -39,17 +39,17 @@
   </a>
 </nav>
 
-{% if user.is_supervisor %}
-<h2 class="inicio-secao">Supervisão</h2>
+<h2 class="inicio-secao">{% if user.is_supervisor %}Supervisão e cadastros{% else %}Cadastros{% endif %}</h2>
 <div class="supervisao">
+  {% if user.is_supervisor %}
   <a href="{% url 'dashboard:painel' %}">
     <strong>Dashboard</strong>
     <span>Totais do período, pendências por loja e por vendedor, e itens parados.</span>
   </a>
+  {% endif %}
   <a href="{% url 'cadastros:lista' 'lojas' %}">
     <strong>Cadastros</strong>
     <span>Lojas, vendedores e bancos usados nos formulários.</span>
   </a>
 </div>
-{% endif %}
 {% endblock %}
