@@ -22,3 +22,10 @@ def supervisor_required(view_func):
         return view_func(request, *args, **kwargs)
 
     return _wrapped
+
+class ComumRequiredMixin(UserPassesTestMixin):
+    """Para class-based views: só usuários comuns acessam. Supervisores recebem 403."""
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and not user.is_supervisor

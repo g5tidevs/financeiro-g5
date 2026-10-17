@@ -5,8 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView
-
-
+from apps.contas.mixins import ComumRequiredMixin
 from .forms import BancoForm, LojaForm, VendedorForm
 from .models import Banco, Loja, Vendedor
 
@@ -41,7 +40,7 @@ CADASTROS = {
 }
 
 
-class CadastroMixin:
+class CadastroMixin(ComumRequiredMixin):
     """Descobre pela URL qual cadastro está sendo usado."""
 
     def dispatch(self, request, *args, **kwargs):
