@@ -154,6 +154,23 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .form-check-input:checked { background-color: var(--verde-rodape); border-color: var(--verde-rodape); }
 .form-check-input:focus { border-color: var(--verde-rodape); box-shadow: 0 0 0 3px rgba(116, 180, 4, .35); }
 
+/* Lista de opções dos selects: verde claro ao passar o mouse, no lugar do azul do sistema.
+   Só onde o navegador deixa estilizar a lista (Chrome e Edge); nos outros fica a lista nativa. */
+@supports (appearance: base-select) {
+  .form-select:not([multiple]):not([size]),
+  .form-select:not([multiple]):not([size])::picker(select) { appearance: base-select; }
+  .form-select::picker-icon { display: none; } /* a seta continua sendo a do Bootstrap */
+  .form-select::picker(select) {
+    margin-top: 4px; padding: .3rem; max-block-size: 18rem;
+    background: var(--papel); border: 1px solid var(--linha); border-radius: var(--raio-controle);
+    box-shadow: 0 2px 6px rgba(24, 38, 31, .06), 0 14px 32px rgba(4, 92, 60, .12);
+  }
+  .form-select option { padding: .45rem .7rem; border-radius: 6px; }
+  .form-select option:hover, .form-select option:focus-visible { background: var(--feito-fundo); color: var(--feito-texto); outline: none; }
+  .form-select option:checked { font-weight: 600; color: var(--verde-rodape); }
+  .form-select option::checkmark { color: var(--verde-rodape); }
+}
+
 /* ===== Mensagens: a faixa na borda diz o tipo ===== */
 .alert {
   --cor-alerta: var(--tinta-suave);
