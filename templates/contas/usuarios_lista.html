@@ -6,7 +6,10 @@
     <h1 class="pagina-titulo">Usuários</h1>
     <p class="pagina-sub mb-0">Quem pode entrar no sistema e o que cada pessoa enxerga.</p>
   </div>
-  <a href="{% url 'contas:usuario_novo' %}" class="btn btn-primario">Novo usuário</a>
+   <div class="barra-acoes-botoes">
+    <a href="{% url 'contas:acessos' %}" class="btn btn-secundario">Log de acessos</a>
+    <a href="{% url 'contas:usuario_novo' %}" class="btn btn-primario">Novo usuário</a>
+   </div> 
 </div>
 
 <form method="get" class="painel-filtros" aria-label="Filtros">

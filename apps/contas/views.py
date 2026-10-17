@@ -1,15 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.views import View
 from django.views.generic import CreateView, FormView, ListView, UpdateView
 
-from .forms import UsuarioCriarForm, UsuarioEditarForm, UsuarioSenhaForm
+from .forms import AcessoFiltroForm, UsuarioCriarForm, UsuarioEditarForm, UsuarioSenhaForm
 from .mixins import AdminRequiredMixin
-from .models import Usuario
+from .models import RegistroAcesso, Usuario
 
 
 class UsuarioListView(AdminRequiredMixin, ListView):
@@ -117,3 +117,29 @@ class UsuarioAlternarView(AdminRequiredMixin, View):
         else:
             messages.success(request, f"Usuário desativado: {usuario}. Ele não consegue mais entrar no sistema.")
         return redirect(destino)
+
+
+class AcessoListView(AdminRequiredMixin, ListView):
+    """Log de acessos: entradas, saídas e tentativas de login que falharam."""
+
+    template_name = "contas/acessos_lista.html"
+    paginate_by = 50
+
+    def get_queryset(self):
+        self.filtro = AcessoFiltroForm(self.request.GET or None)
+        qs = RegistroAcesso.objects.select_related("usuario")
+        return self.filtro.filtrar(qs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filtro"] = self.filtro
+        context["resumo"] = self.object_list.aggregate(
+            entradas=Count("id", filter=Q(tipo=RegistroAcesso.Tipo.ENTRADA)),
+            falhas=Count("id", filter=Q(tipo=RegistroAcesso.Tipo.FALHA)),
+            saidas=Count("id", filter=Q(tipo=RegistroAcesso.Tipo.SAIDA)),
+        )
+        params = self.request.GET.copy()
+        params.pop("page", None)
+        context["filtros_url"] = params.urlencode()
+        context["tem_filtro"] = any(valor for valor in params.values())
+        return context        

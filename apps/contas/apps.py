@@ -6,3 +6,6 @@ class ContasConfig(AppConfig):
     name = "apps.contas"
     label = "contas"
     verbose_name = "Contas de usuário"
+
+    def ready(self):
+        from . import signals  # noqa: F401  (liga o log de acessos)

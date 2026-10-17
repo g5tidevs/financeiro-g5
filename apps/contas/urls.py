@@ -20,4 +20,6 @@ urlpatterns = [
     path("usuarios/<int:pk>/editar/", views.UsuarioUpdateView.as_view(), name="usuario_editar"),
     path("usuarios/<int:pk>/senha/", views.UsuarioSenhaView.as_view(), name="usuario_senha"),
     path("usuarios/<int:pk>/alternar/", views.UsuarioAlternarView.as_view(), name="usuario_alternar"),
+        # Log de acessos (só o administrador)
+    path("acessos/", views.AcessoListView.as_view(), name="acessos"),
 ]

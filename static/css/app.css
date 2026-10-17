@@ -639,3 +639,11 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 @media (min-width: 768px) {
   .filtros-grid .campo--periodo { grid-column: span 2; }
 }
+
+
+
+/* Selo vermelho (falhas no log de acessos) */
+.selo-perigo { background: #fdecea; color: #8f1c13; }
+
+/* Botões lado a lado no topo das listas */
+.barra-acoes-botoes { display: flex; gap: .5rem; flex-wrap: wrap; }

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Log de acessos{% endblock %}
+{% block content %}
+<div class="barra-acoes">
+  <div>
+    <h1 class="pagina-titulo">Log de acessos</h1>
+    <p class="pagina-sub mb-0">Cada entrada, saída e tentativa de login que falhou, da mais recente para a mais antiga.</p>
+  </div>
+  <a href="{% url 'contas:usuarios' %}" class="btn btn-secundario">Voltar para usuários</a>
+</div>
+
+<form method="get" class="painel-filtros" aria-label="Filtros">
+  {% if filtro.non_field_errors %}
+    <div class="alert alert-danger">{{ filtro.non_field_errors|join:" " }}</div>
+  {% endif %}
+  <div class="filtros-grid">
+    {% for field in filtro %}
+      <div>
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="filtros-acoes">
+    <button type="submit" class="btn btn-primario">Filtrar</button>
+    {% if tem_filtro %}<a href="{% url 'contas:acessos' %}" class="btn btn-secundario">Limpar filtros</a>{% endif %}
+  </div>
+</form>
+
+<div class="resumo">
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Entradas</span>
+    <span class="resumo-valor">{{ resumo.entradas }}</span>
+  </div>
+  <div class="resumo-item{% if resumo.falhas %} resumo-alerta{% endif %}">
+    <span class="resumo-rotulo">Falhas no login</span>
+    <span class="resumo-valor">{{ resumo.falhas }}</span>
+  </div>
+  <div class="resumo-item">
+    <span class="resumo-rotulo">Saídas</span>
+    <span class="resumo-valor">{{ resumo.saidas }}</span>
+  </div>
+</div>
+
+<div class="tabela-container">
+  <table class="table tabela">
+    <thead>
+      <tr>
+        <th>Data e hora</th>
+        <th>Evento</th>
+        <th>Usuário</th>
+        <th>Detalhe</th>
+        <th>IP</th>
+        <th>Navegador</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in page_obj %}
+      <tr>
+        <td>{{ a.data_hora|date:"d/m/Y H:i:s" }}</td>
+        <td>
+          {% if a.tipo == "ENTRADA" %}<span class="selo selo-ok">Entrou</span>
+          {% elif a.tipo == "FALHA" %}<span class="selo selo-perigo">Falha</span>
+          {% else %}<span class="selo selo-off">Saiu</span>{% endif %}
+        </td>
+        <td>
+          {% if a.usuario %}{{ a.usuario }}<span class="texto-secundario">{{ a.username }}</span>
+          {% else %}{{ a.username|default:"—" }}{% endif %}
+        </td>
+        <td>{{ a.detalhe|default:"—" }}</td>
+        <td class="nsu">{{ a.ip|default:"—" }}</td>
+        <td><span title="{{ a.user_agent }}">{{ a.navegador }}</span></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="vazio">
+          {% if tem_filtro %}Nenhum acesso com esses filtros.{% else %}Nenhum acesso registrado ainda.{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="paginacao" aria-label="Paginação">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&{{ filtros_url }}">Anterior</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&{{ filtros_url }}">Próxima</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
